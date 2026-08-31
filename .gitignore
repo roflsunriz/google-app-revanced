@@ -1,2 +1,8 @@
 COMMON-AGENTS.md
 google-app-apks/
+.gradle/
+**/build/
+build/
+dist/
+output/
+local.properties

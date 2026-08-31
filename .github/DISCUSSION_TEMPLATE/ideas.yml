@@ -1,0 +1,9 @@
+title: "[Idea] "
+labels: []
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: 提案と利用者への効果
+    validations:
+      required: true

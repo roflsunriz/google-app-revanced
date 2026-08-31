@@ -1,0 +1,17 @@
+name: Documentation
+description: 説明不足や手順誤りを報告します
+title: "docs: "
+labels: [documentation]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: 対象ページ
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: 問題と望ましい説明
+    validations:
+      required: true

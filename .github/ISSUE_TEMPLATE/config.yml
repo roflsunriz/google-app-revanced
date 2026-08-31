@@ -1,0 +1,17 @@
+name: Config / compatibility
+description: 端末、版、設定、互換性について相談します
+title: "config: "
+labels: [configuration]
+body:
+  - type: input
+    id: environment
+    attributes:
+      label: 端末・Android・CPU・Google アプリ版
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: 確認したい内容
+    validations:
+      required: true

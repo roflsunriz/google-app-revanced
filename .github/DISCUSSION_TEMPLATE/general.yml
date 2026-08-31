@@ -1,0 +1,9 @@
+title: "[General] "
+labels: []
+body:
+  - type: textarea
+    id: topic
+    attributes:
+      label: 話題
+    validations:
+      required: true

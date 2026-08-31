@@ -1,0 +1,34 @@
+name: Bug report
+description: パッチ失敗、クラッシュ、広告残りを報告します
+title: "bug: "
+labels: [bug]
+body:
+  - type: input
+    id: app-version
+    attributes:
+      label: Google アプリ版
+    validations:
+      required: true
+  - type: input
+    id: manager-version
+    attributes:
+      label: ReVanced Manager / CLI版
+    validations:
+      required: true
+  - type: dropdown
+    id: input-format
+    attributes:
+      label: 入力形式
+      options: [APK, XAPKから統合, APKMから統合, APKSから統合]
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順と実際の結果
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 秘密情報を除いたログ
