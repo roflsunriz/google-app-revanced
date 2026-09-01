@@ -2,7 +2,10 @@ package app.revanced.extension.googleapp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.TypedValue;
@@ -79,9 +82,11 @@ public final class SettingsInjector {
             }
         }
 
-        int rowHeight = dp(activity, 92);
+        int rowHeight = dp(activity, 160);
         View row = createRow(activity);
         row.setTag(ROW_TAG);
+        row.setMinimumHeight(rowHeight);
+        boolean recyclerInset = false;
         if (parent instanceof FrameLayout) {
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
@@ -89,20 +94,29 @@ public final class SettingsInjector {
                     Gravity.BOTTOM
             );
             parent.addView(row, params);
+            ViewGroup.LayoutParams recyclerParams = recycler.getLayoutParams();
+            if (recyclerParams instanceof FrameLayout.LayoutParams) {
+                FrameLayout.LayoutParams frameParams = (FrameLayout.LayoutParams) recyclerParams;
+                frameParams.bottomMargin += rowHeight;
+                recycler.setLayoutParams(frameParams);
+                recyclerInset = true;
+            }
         } else {
             parent.addView(row, new ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     rowHeight
             ));
         }
-        recycler.setPadding(
-                recycler.getPaddingLeft(),
-                recycler.getPaddingTop(),
-                recycler.getPaddingRight(),
-                recycler.getPaddingBottom() + rowHeight
-        );
-        if (recycler instanceof ViewGroup) {
-            ((ViewGroup) recycler).setClipToPadding(false);
+        if (!recyclerInset) {
+            recycler.setPadding(
+                    recycler.getPaddingLeft(),
+                    recycler.getPaddingTop(),
+                    recycler.getPaddingRight(),
+                    recycler.getPaddingBottom() + rowHeight
+            );
+            if (recycler instanceof ViewGroup) {
+                ((ViewGroup) recycler).setClipToPadding(false);
+            }
         }
         return true;
     }
@@ -111,6 +125,7 @@ public final class SettingsInjector {
         LocalizedStrings strings = LocalizedStrings.current();
         int primary = themeColor(activity, android.R.attr.textColorPrimary, Color.WHITE);
         int secondary = themeColor(activity, android.R.attr.textColorSecondary, 0xffb0b0b0);
+        int ripple = themeColor(activity, android.R.attr.colorControlHighlight, 0x33ffffff);
 
         LinearLayout row = new LinearLayout(activity);
         row.setOrientation(LinearLayout.HORIZONTAL);
@@ -119,10 +134,11 @@ public final class SettingsInjector {
         row.setLayoutDirection(strings.rightToLeft ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
         row.setFocusable(true);
         row.setClickable(true);
-        TypedValue selectable = new TypedValue();
-        if (activity.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, selectable, true)) {
-            row.setBackgroundResource(selectable.resourceId);
-        }
+        row.setBackground(new RippleDrawable(
+                ColorStateList.valueOf(ripple),
+                new ColorDrawable(Color.TRANSPARENT),
+                null
+        ));
 
         ImageView icon = new ImageView(activity);
         int iconId = activity.getResources().getIdentifier(
@@ -149,8 +165,13 @@ public final class SettingsInjector {
         summary.setTextColor(secondary);
         summary.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         summary.setPadding(0, dp(activity, 2), 0, 0);
-        labels.addView(title);
-        labels.addView(summary);
+        summary.setMaxLines(2);
+        LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        labels.addView(title, labelParams);
+        labels.addView(summary, new LinearLayout.LayoutParams(labelParams));
         row.addView(labels, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
         row.setContentDescription(strings.settingsTitle + ". " + strings.settingsSummary);

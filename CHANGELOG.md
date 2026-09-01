@@ -4,6 +4,26 @@
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-01
+
+### Added
+
+- 非root端末でも検索とGoogleアカウント連携を利用できるよう、ReVanced GmsCoreへ元パッケージ名とOAuth登録証明書を通知し、Play Servicesの権限・authority・サービス接続を転送する「GmsCore support」パッチを追加しました。
+- 標準Googleアプリを残したまま導入できるよう、既定のパッチ後パッケージを `app.revanced.android.googleapp`、表示名を「Google ReVanced」にしました。
+
+### Fixed
+
+- 別パッケージ時に実プロセス名とGoogleアプリ内のハッシュ定数が不一致になり、誤ったDagger/Hiltコンポーネントで起動停止する問題を、Daggerのプロセス選択箇所だけに限定した互換フックで修正しました。
+- GmsCore環境で構成更新やシステム連携を再試行した際、Googleアプリ内の`killProcess`／`System.exit`がクローンを自己終了させる経路を無効化しました。
+- 元パッケージ名の過剰置換でGoogle APIヘッダーまでクローン名になり検索が拒否される問題を修正し、`googlenow` OAuthに使われるGoogleアプリの旧署名ローテーション証明書SHA-1をGmsCoreへ通知するようにしました。
+- GmsCoreが端末証明キーを取得できない場合のSpatulaフォールバック失敗を許容し、GmsCoreにNative Cronet実装がない場合はGoogleアプリ内蔵Java Cronetへ切り替えることで検索結果を表示できるようにしました。
+- WebViewの`loadUrl`をラッパーへ置換した際にサブクラスから自己再帰し検索が停止する問題を、URL検査と広告除去スクリプトの事前挿入方式へ変更して修正しました。
+- Google設定一覧の「Google ReVanced」行が既存項目と重ならず全文を読めるよう、設定リスト領域と分離したテーマ準拠のフッターとして統合しました。
+
+### Changed
+
+- 非root利用者の導入手順を、クローンのインストール後・初回起動前に標準Googleアプリを無効化し、問題時は再有効化して復旧できる手順へ更新しました。
+
 ## [0.1.0] - 2026-08-31
 
 ### Added
@@ -21,5 +41,6 @@
 - 広告ID、AdServices attribution、昇格通知権限と広告測定コンポーネントを無効化し、広告SDKへ識別子や測定イベントが渡る経路を削減しました。
 - ビルド・検証経路の既知脆弱性を除くため、Netty、Protobuf、Commons Lang、Apache HttpClient、Bouncy Castleの推移依存をOSV修正版へ固定しました。
 
-[Unreleased]: https://github.com/roflsunriz/google-app-revanced/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/roflsunriz/google-app-revanced/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/roflsunriz/google-app-revanced/releases/tag/v0.1.0

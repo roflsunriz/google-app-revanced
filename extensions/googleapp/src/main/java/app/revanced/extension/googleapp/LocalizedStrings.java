@@ -36,7 +36,7 @@ public final class LocalizedStrings {
         switch (language) {
             case "ja":
                 return of(new String[]{
-                        "Google ReVanced", "広告とプロモーションの除去を管理します",
+                        "Google ReVanced", "広告とプロモーションを除去します",
                         "広告SDK通信を遮断", "常に有効です。既知の広告配信先への接続を拒否します",
                         "Web検索広告を非表示", "検索結果内の広告要素を削除し、空白も詰めます",
                         "セルフプロモーションを非表示", "Googleアプリ内の機能・サービス宣伝を非表示にします",

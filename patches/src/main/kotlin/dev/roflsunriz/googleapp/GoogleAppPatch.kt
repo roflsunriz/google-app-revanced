@@ -2,6 +2,8 @@ package dev.roflsunriz.googleapp
 
 import app.revanced.patcher.patch.bytecodePatch
 import app.revanced.patcher.patch.resourcePatch
+import app.revanced.patcher.firstMethodOrNull
+import app.revanced.patcher.extensions.addInstructions
 
 private const val GOOGLE_APP_PACKAGE = "com.google.android.googlequicksearchbox"
 
@@ -73,5 +75,14 @@ val googleAppReVancedPatch = bytecodePatch(
     apply {
         patchAdNetworkBoundaries()
         patchComposeAdContainers()
+        firstMethodOrNull {
+            definingClass == "Lcom/google/android/apps/search/googleapp/settingsui/SettingsActivity;" &&
+                name == "onCreate" &&
+                parameterTypes.singleOrNull() == "Landroid/os/Bundle;" &&
+                returnType == "V"
+        }?.addInstructions(
+            0,
+            "invoke-static {p0}, Lapp/revanced/extension/googleapp/SettingsInjector;->onActivityResumed(Landroid/app/Activity;)V",
+        )
     }
 }

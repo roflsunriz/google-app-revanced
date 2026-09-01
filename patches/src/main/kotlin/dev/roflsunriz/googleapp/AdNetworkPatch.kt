@@ -25,7 +25,7 @@ private sealed class Rewrite(open val index: Int) {
 
 internal fun BytecodePatchContext.patchAdNetworkBoundaries() {
     transformInstructions(
-        match = { classDef, _, instruction, index ->
+        match = { classDef, method, instruction, index ->
             if (classDef.type.startsWith(EXTENSION_PREFIX)) return@transformInstructions null
 
             val stringReference = (instruction as? ReferenceInstruction)?.reference as? StringReference
@@ -97,13 +97,34 @@ private fun rewriteBoundary(
         "Landroid/net/Uri;->parse(Ljava/lang/String;)Landroid/net/Uri;" ->
             Rewrite.Replace(index, registers.staticInvoke(instruction, "$AD_BLOCKER->parseUri(Ljava/lang/String;)Landroid/net/Uri;"))
         "Landroid/webkit/WebView;->loadUrl(Ljava/lang/String;)V" ->
-            Rewrite.Replace(index, registers.staticInvoke(instruction, "$WEB_BLOCKER->loadUrl(Landroid/webkit/WebView;Ljava/lang/String;)V"))
+            webViewRewrite(index, registers, listOf(1))
         "Landroid/webkit/WebView;->loadUrl(Ljava/lang/String;Ljava/util/Map;)V" ->
-            Rewrite.Replace(index, registers.staticInvoke(instruction, "$WEB_BLOCKER->loadUrl(Landroid/webkit/WebView;Ljava/lang/String;Ljava/util/Map;)V"))
+            webViewRewrite(index, registers, listOf(1))
         "Landroid/webkit/WebView;->loadDataWithBaseURL(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V" ->
-            Rewrite.Replace(index, registers.staticInvoke(instruction, "$WEB_BLOCKER->loadDataWithBaseURL(Landroid/webkit/WebView;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V"))
+            webViewRewrite(index, registers, listOf(1, 5))
         else -> stringArgumentRewrite(index, instruction, reference, registers)
     }
+}
+
+private fun webViewRewrite(
+    index: Int,
+    registers: List<Int>,
+    urlParameterIndexes: List<Int>,
+): Rewrite? {
+    val receiver = registers.firstOrNull() ?: return null
+    val urlRegisters = urlParameterIndexes.map { parameterIndex ->
+        registers.getOrNull(parameterIndex) ?: return null
+    }
+    if ((urlRegisters + receiver).any { it > 255 }) return null
+
+    val instructions = buildList {
+        urlRegisters.forEach { register ->
+            add("${register.staticInvoke()}, $AD_BLOCKER->sanitizeWebViewUrl(Ljava/lang/String;)Ljava/lang/String;")
+            add("move-result-object v$register")
+        }
+        add("${receiver.staticInvoke()}, $WEB_BLOCKER->attach(Landroid/webkit/WebView;)V")
+    }
+    return Rewrite.Insert(index, instructions.joinToString("\n"))
 }
 
 private fun stringArgumentRewrite(
@@ -144,6 +165,12 @@ private fun Instruction.argumentRegisters(): List<Int>? = when (this) {
 }
 
 private fun Instruction.isStaticInvoke() = opcode == Opcode.INVOKE_STATIC || opcode == Opcode.INVOKE_STATIC_RANGE
+
+private fun Int.staticInvoke() = if (this > 15) {
+    "invoke-static/range { v$this .. v$this }"
+} else {
+    "invoke-static { v$this }"
+}
 
 private fun List<Int>.staticInvoke(instruction: Instruction, target: String): String {
     val mnemonic = if (instruction is RegisterRangeInstruction) "invoke-static/range" else "invoke-static"

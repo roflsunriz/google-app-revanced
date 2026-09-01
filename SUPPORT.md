@@ -6,7 +6,9 @@
 - 入力がGoogle アプリの単一APKである
 - APKのCPUアーキテクチャが端末と一致する
 - ReVanced Managerが最新である
-- rootなし端末の署名不一致制約を理解している
+- 非root端末ではReVanced GmsCoreがインストールされている
+- ReVanced GmsCoreのGoogleデバイス登録、Cloud Messaging、デバイス認証が有効である
+- 標準GoogleアプリはReVanced版のインストール後・初回起動前に無効化している
 
 ## 問い合わせ
 

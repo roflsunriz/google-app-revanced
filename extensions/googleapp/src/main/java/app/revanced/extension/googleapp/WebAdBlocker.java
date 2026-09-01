@@ -26,34 +26,6 @@ public final class WebAdBlocker {
         inject(webView);
     }
 
-    public static void loadUrl(WebView webView, String url) {
-        webView.loadUrl(AdBlocker.sanitizeWebViewUrl(url));
-        webView.post(() -> inject(webView));
-    }
-
-    public static void loadUrl(WebView webView, String url, Map<String, String> headers) {
-        webView.loadUrl(AdBlocker.sanitizeWebViewUrl(url), headers);
-        webView.post(() -> inject(webView));
-    }
-
-    public static void loadDataWithBaseURL(
-            WebView webView,
-            String baseUrl,
-            String data,
-            String mimeType,
-            String encoding,
-            String historyUrl
-    ) {
-        webView.loadDataWithBaseURL(
-                AdBlocker.sanitizeWebViewUrl(baseUrl),
-                data,
-                mimeType,
-                encoding,
-                AdBlocker.sanitizeWebViewUrl(historyUrl)
-        );
-        webView.post(() -> inject(webView));
-    }
-
     private static void inject(WebView webView) {
         Context context = webView.getContext();
         if (!Settings.hideWebAds(context) || !webView.isAttachedToWindow()) {

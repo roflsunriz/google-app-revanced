@@ -11,11 +11,20 @@ Google アプリ（`com.google.android.googlequicksearchbox`）から広告通�
 - Google アプリの設定一覧へ「Google ReVanced」を追加し、動的な除去項目を設定できます。
 - 対応バージョンを固定せず、安定したAPI・資源名・構造を検出して適用します。
 
-## 利用前の重要事項
+## 非root端末への導入
 
-Google アプリは多くの端末でGoogle署名のシステムアプリです。ReVancedで署名したAPKは証明書が異なるため、rootなしの端末では同じパッケージ名へ上書きインストールできません。`INSTALL_FAILED_UPDATE_INCOMPATIBLE` はパッチ失敗ではなくAndroidの署名保護です。
+Google署名の標準アプリは別証明書で上書きできないため、既定の「GmsCore support」パッチはReVanced版を `app.revanced.android.googleapp` として別にインストールします。Play Services連携には[ReVanced GmsCore](https://github.com/ReVanced/GmsCore/releases/latest)（`app.revanced.android.gms`）が必要です。
 
-実際の導入には、元へ戻せるバックアップを用意したうえで、root対応のReVanced Managerによるマウント方式など、端末側でシステムアプリを安全に置き換えられる環境が必要です。Googleアカウント、Assistant、システム連携を使うため、別パッケージ名への変更はサポートしていません。
+1. ReVanced GmsCoreをインストールし、Googleデバイス登録、Cloud Messaging、デバイス認証を有効にして、必要なGoogleアカウントを追加します。
+2. 下記手順でパッチソースをManagerへ追加します。
+3. Google アプリの単一APKを選び、既定の「GmsCore support」と「Google ReVanced」を両方適用します。
+4. 「Google ReVanced」をインストールします。
+5. Androidの「設定」→「アプリ」→標準の「Google」を開き、「無効にする」を選びます。
+6. 「Google ReVanced」を起動し、検索結果とGoogle設定内の「Google ReVanced」が開くことを確認します。初回だけGmsCoreのアカウント選択や権限確認が表示される場合があります。
+
+問題があれば標準Googleアプリを「有効にする」へ戻し、`app.revanced.android.googleapp`をアンインストールすれば復旧できます。純正版とクローンを同時に有効にするとGoogle側の構成更新でクローンが終了するため、クローンの初回起動前に純正版を無効化してください。
+
+rootマウントで元パッケージを維持する場合は、Managerの高度な設定でパッチ選択を許可し、「GmsCore support」を無効にしてから適用してください。
 
 ## ReVanced Managerへパッチを追加する
 
@@ -25,7 +34,7 @@ ReVanced Managerの「Patches」タブで編集ボタン、追加ボタン、「
 https://github.com/roflsunriz/google-app-revanced/releases/latest/download/patches.json
 ```
 
-その後「Apps」タブから単一APKを選び、「Google ReVanced」を適用します。APK bundle、XAPK、APKM、APKSは先に単一APKへ統合してください。公式Managerの現在の操作は[Managing patches](https://github.com/ReVanced/revanced-manager/blob/main/docs/2_3_managing_patches.md)と[Patching apps](https://github.com/ReVanced/revanced-manager/blob/main/docs/2_1_patching.md)も参照してください。
+その後「Apps」タブから単一APKを選び、既定の2パッチを適用します。APK bundle、XAPK、APKM、APKSは先に単一APKへ統合してください。公式Managerの現在の操作は[Managing patches](https://github.com/ReVanced/revanced-manager/blob/main/docs/2_3_managing_patches.md)と[Patching apps](https://github.com/ReVanced/revanced-manager/blob/main/docs/2_1_patching.md)も参照してください。
 
 ## APKの準備
 
