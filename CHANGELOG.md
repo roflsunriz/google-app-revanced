@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-09-02
+
 ### Fixed
 
 - クローン版がReVanced GmsCoreのCloud Messagingへ登録されずDiscoverを取得できない問題を防ぐため、GCM受信カテゴリを実パッケージ名へ変換し、`:googleapp`固有の初期化ProviderからGmsCore互換登録を自動要求して、返されたトークンをGoogleアプリ内蔵Firebaseの保存形式へ同期するようにしました。
@@ -60,7 +62,8 @@
 - 広告ID、AdServices attribution、昇格通知権限と広告測定コンポーネントを無効化し、広告SDKへ識別子や測定イベントが渡る経路を削減しました。
 - ビルド・検証経路の既知脆弱性を除くため、Netty、Protobuf、Commons Lang、Apache HttpClient、Bouncy Castleの推移依存をOSV修正版へ固定しました。
 
-[Unreleased]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.3...HEAD
+[0.2.3]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/roflsunriz/google-app-revanced/compare/v0.1.0...v0.2.0
