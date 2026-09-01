@@ -91,6 +91,13 @@ internal fun configureGmsCoreManifest(document: Document) {
         provider.setAttribute("android:authorities", replacement)
     }
 
+    manifest.getElementsByTagName("category").elements().forEach { category ->
+        val original = category.androidAttribute("name")
+        if (original == ORIGINAL_PACKAGE || original.startsWith("$ORIGINAL_PACKAGE.")) {
+            category.setAttribute("android:name", cloneOwnedName(original))
+        }
+    }
+
     manifest.getElementsByTagName("application").elements().plus(
         manifest.getElementsByTagName("activity").elements(),
     ).plus(

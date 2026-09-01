@@ -17,6 +17,10 @@ import com.android.tools.smali.dexlib2.iface.reference.StringReference
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 
 private const val GMS_COMPAT = "Lapp/revanced/extension/googleapp/GmsCoreCompat;"
+private const val FIREBASE_MESSAGING = "Lcom/google/firebase/messaging/FirebaseMessaging;"
+private const val FIREBASE_NOT_INITIALIZED_ERROR =
+    "Default FirebaseApp is not initialized in this process "
+private const val FIREBASE_NEW_TOKEN_LOG = "Invoking onNewToken for app: "
 private const val PLAY_SERVICES_CRONET_PROVIDER =
     "Lcom/google/android/gms/net/PlayServicesCronetProvider;"
 
@@ -56,6 +60,8 @@ val gmsCoreSupportPatch = bytecodePatch(
     dependsOn(gmsCoreResourcesPatch, googleAppReVancedPatch)
 
     apply {
+        patchCloudMessagingTokenNotification()
+
         val playServicesCronetProvider = classDefs.firstOrNull {
             it.type == PLAY_SERVICES_CRONET_PROVIDER
         } ?: throw PatchException("Google Play services Cronet provider was not found")
@@ -293,6 +299,49 @@ val gmsCoreSupportPatch = bytecodePatch(
             )
         }
     }
+}
+
+private fun app.revanced.patcher.patch.BytecodePatchContext.patchCloudMessagingTokenNotification() {
+    val firebaseMessagingClass = classDefs.single { it.type == FIREBASE_MESSAGING }
+    val getFirebaseMessaging = firebaseMessagingClass.methods.singleOrNull { method ->
+        method.name == "getInstance" &&
+            method.parameterTypes.size == 1 &&
+            method.returnType == FIREBASE_MESSAGING
+    } ?: throw PatchException("Firebase Messaging instance method was not found")
+    val firebaseAppType = getFirebaseMessaging.parameterTypes.single().toString()
+    val getDefaultFirebaseApp = classDefs.singleOrNull { it.type == firebaseAppType }
+        ?.methods
+        ?.singleOrNull { method ->
+            method.parameterTypes.isEmpty() &&
+                method.returnType == firebaseAppType &&
+                method.containsString(FIREBASE_NOT_INITIALIZED_ERROR)
+        } ?: throw PatchException("Default Firebase app method was not found")
+    val notifyNewToken = firebaseMessagingClass.methods.singleOrNull { method ->
+        method.parameterTypes.map { it.toString() } == listOf("Ljava/lang/String;") &&
+            method.returnType == "V" &&
+            method.containsString(FIREBASE_NEW_TOKEN_LOG)
+    } ?: throw PatchException("Firebase Cloud Messaging token notification method was not found")
+
+    val tokenBridge = classDefs.singleOrNull { it.type == GMS_COMPAT }
+        ?.methods
+        ?.singleOrNull { method ->
+            method.name == "notifyCloudMessagingToken" &&
+                method.parameterTypes.map { it.toString() } ==
+                listOf("Ljava/lang/String;", "Ljava/lang/Object;") &&
+                method.returnType == "V"
+        } ?: throw PatchException("Cloud Messaging token notification bridge was not found")
+
+    firstMethod(tokenBridge).addInstructions(
+        0,
+        """
+            invoke-static {}, $getDefaultFirebaseApp
+            move-result-object p1
+            invoke-static {p1}, $getFirebaseMessaging
+            move-result-object p1
+            invoke-virtual {p1, p0}, $notifyNewToken
+            return-void
+        """.trimIndent(),
+    )
 }
 
 private fun app.revanced.patcher.patch.BytecodePatchContext.findMethodsContaining(value: String): List<Method> =

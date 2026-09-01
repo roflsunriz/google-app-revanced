@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- クローン版がReVanced GmsCoreのCloud Messagingへ登録されずDiscoverを取得できない問題を防ぐため、GCM受信カテゴリを実パッケージ名へ変換し、`:googleapp`固有の初期化ProviderからGmsCore互換登録を自動要求して、返されたトークンをGoogleアプリ内蔵Firebaseの保存形式へ同期するようにしました。
+
 ## [0.2.2] - 2026-09-02
 
 ### Fixed

@@ -6,13 +6,14 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 
-public final class BootstrapProvider extends ContentProvider {
+public class BootstrapProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         if (getContext() == null) {
             return false;
         }
         RuntimeHooks.install((Application) getContext().getApplicationContext());
+        GmsCoreCompat.requestCloudMessagingRegistration(getContext());
         return true;
     }
 

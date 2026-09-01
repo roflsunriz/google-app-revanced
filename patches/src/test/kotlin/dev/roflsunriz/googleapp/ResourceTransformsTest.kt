@@ -80,6 +80,35 @@ class ResourceTransformsTest {
         assertFalse(file.readText().contains("usesAssistData"))
     }
 
+    @Test
+    fun `各プロセスへ固有の初期化Providerを追加する`() {
+        val document = xml(
+            """
+            <manifest xmlns:android="$ANDROID_NAMESPACE">
+              <application/>
+            </manifest>
+            """.trimIndent(),
+        )
+
+        installExtensionComponents(document)
+
+        val providers = (0 until document.getElementsByTagName("provider").length)
+            .map { document.getElementsByTagName("provider").item(it) as Element }
+        assertEquals(
+            listOf(
+                "app.revanced.extension.googleapp.BootstrapProvider",
+                "app.revanced.extension.googleapp.GoogleAppBootstrapProvider",
+                "app.revanced.extension.googleapp.SearchBootstrapProvider",
+            ),
+            providers.map { it.getAttributeNS(ANDROID_NAMESPACE, "name") },
+        )
+        assertEquals(
+            listOf("", ":googleapp", ":search"),
+            providers.map { it.getAttributeNS(ANDROID_NAMESPACE, "process") },
+        )
+        assertEquals(3, providers.map { it.getAttributeNS(ANDROID_NAMESPACE, "authorities") }.toSet().size)
+    }
+
     private fun xml(value: String): Document = DocumentBuilderFactory.newInstance().run {
         isNamespaceAware = true
         newDocumentBuilder().parse(ByteArrayInputStream(value.toByteArray()))

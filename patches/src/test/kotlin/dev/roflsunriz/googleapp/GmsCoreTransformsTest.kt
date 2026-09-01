@@ -21,6 +21,14 @@ class GmsCoreTransformsTest {
               <application android:label="Google">
                 <provider android:name="example.Provider" android:authorities="$ORIGINAL_PACKAGE.provider"
                     android:permission="$ORIGINAL_PACKAGE.INTERNAL"/>
+                <receiver android:name="example.GcmReceiver">
+                  <intent-filter>
+                    <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                    <category android:name="$ORIGINAL_PACKAGE"/>
+                    <category android:name="$ORIGINAL_PACKAGE.gcm"/>
+                    <category android:name="android.intent.category.DEFAULT"/>
+                  </intent-filter>
+                </receiver>
               </application>
             </manifest>
             """.trimIndent(),
@@ -36,6 +44,13 @@ class GmsCoreTransformsTest {
         val provider = document.getElementsByTagName("provider").item(0) as Element
         assertEquals("$REVANCED_PACKAGE.provider", provider.getAttribute("android:authorities"))
         assertEquals("$REVANCED_PACKAGE.INTERNAL", provider.getAttribute("android:permission"))
+        val categories = (0 until document.getElementsByTagName("category").length)
+            .map { document.getElementsByTagName("category").item(it) as Element }
+            .map { it.getAttribute("android:name") }
+        assertEquals(
+            listOf(REVANCED_PACKAGE, "$REVANCED_PACKAGE.gcm", "android.intent.category.DEFAULT"),
+            categories,
+        )
         val queriedPackages = (0 until document.getElementsByTagName("package").length)
             .map { document.getElementsByTagName("package").item(it) as Element }
             .map { it.getAttribute("android:name") }

@@ -20,7 +20,7 @@ Google署名の標準アプリは別証明書で上書きできないため、�
 3. Google アプリの単一APKを選び、既定の「GmsCore support」と「Google ReVanced」を両方適用します。
 4. 「Google ReVanced」をインストールします。
 5. Androidの「設定」→「アプリ」→標準の「Google」を開き、「無効にする」を選びます。
-6. 「Google ReVanced」を起動し、検索結果とGoogle設定内の「Google ReVanced」が開くことを確認します。初回だけGmsCoreのアカウント選択や権限確認が表示される場合があります。
+6. 「Google ReVanced」を起動します。起動後にCloud Messaging登録が自動要求されるため、ReVanced GmsCoreの「Cloud Messaging」→「Cloud Messagingを使用するアプリ」に「Google ReVanced」が追加され、Discover、検索結果、Google設定内の「Google ReVanced」が開くことを確認します。初回だけGmsCoreのアカウント選択や登録許可が表示される場合があります。
 
 問題があれば標準Googleアプリを「有効にする」へ戻し、`app.revanced.android.googleapp`をアンインストールすれば復旧できます。純正版とクローンを同時に有効にするとGoogle側の構成更新でクローンが終了するため、クローンの初回起動前に純正版を無効化してください。
 

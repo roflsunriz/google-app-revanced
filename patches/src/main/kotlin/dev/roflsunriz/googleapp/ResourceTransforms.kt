@@ -69,7 +69,11 @@ internal fun installExtensionComponents(document: Document) {
         })
     }
 
-    listOf(null, ":googleapp", ":search").forEachIndexed { index, process ->
+    listOf(
+        "app.revanced.extension.googleapp.BootstrapProvider" to null,
+        "app.revanced.extension.googleapp.GoogleAppBootstrapProvider" to ":googleapp",
+        "app.revanced.extension.googleapp.SearchBootstrapProvider" to ":search",
+    ).forEachIndexed { index, (providerClass, process) ->
         val authority = "com.google.android.googlequicksearchbox.revanced.bootstrap.$index"
         val exists = application.childElements().any {
             it.tagName == "provider" && it.androidAttribute("authorities") == authority
@@ -79,7 +83,7 @@ internal fun installExtensionComponents(document: Document) {
                 setAttributeNS(
                     ANDROID_NAMESPACE,
                     "android:name",
-                    "app.revanced.extension.googleapp.BootstrapProvider",
+                    providerClass,
                 )
                 setAttributeNS(ANDROID_NAMESPACE, "android:authorities", authority)
                 setAttributeNS(ANDROID_NAMESPACE, "android:exported", "false")

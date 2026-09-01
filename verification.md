@@ -7,7 +7,7 @@
 - マニフェスト変換: 広告ID・AdServices権限除去、広告測定コンポーネント無効化
 - API 37互換: 非公開framework直接参照、将来の音声対話属性
 - Android拡張: 広告URL判定、資源名の誤検出防止
-- GmsCore互換: クローンパッケージ、権限・authority、spoofメタデータ、process名変換、resource参照authority、Google API認証ヘッダーの保持
+- GmsCore互換: クローンパッケージ、権限・authority、GCM受信カテゴリ、spoofメタデータ、process名変換、Cloud Messaging登録対象プロセス、Google API認証ヘッダーの保持
 
 ## 2026-09-01の実測
 
@@ -53,6 +53,16 @@
 - 更新後の通常音声検索は「認識中…」へ進み、無音状態でも録音が8.8秒継続しました。修正前の即時終了とAPIパッケージ拒否は0件で、無音タイムアウト時の通常キャンセルだけを確認しました。
 - 「曲を検索」は3秒時点で「認識しています…」、9秒時点で「もう少しで完了です…」となり、録音が13.8秒以上継続しました。修正前の約0.63秒での「一致する曲はありません」という即時終了とAPIパッケージ拒否は再現しませんでした。
 - 実機確認後はマイク権限を未許可へ戻し、ManagerのローカルRVPを削除して公開`patches.json` URLを再登録しました。検証用APK、RVP、UI階層も端末から削除しました。
+
+## Cloud Messaging自動登録とDiscoverの修正
+
+- 修正前のクローン版では、GCM受信receiverのカテゴリが`com.google.android.googlequicksearchbox`のまま残り、同じ`BootstrapProvider`クラスを3プロセスへ重複宣言していたため、`:googleapp`での初期化も保証されていませんでした。
+- Googleアプリ17.52.24内蔵Firebaseの自動要求はReVanced GmsCore 0.3.13.2へ未対応のMessenger要求`what=4`を送り、GmsCoreのCloud Messagingアプリ一覧へクローン版を登録できないことを確認しました。
+- GCMカテゴリを`app.revanced.android.googleapp`へ変換し、既定・`:googleapp`・`:search`へ固有のProviderクラスを配置しました。`:googleapp`ではAPK内の`gcm_defaultSenderId`と`google_app_id`を読み、GmsCoreが対応する`com.google.android.c2dm.intent.REGISTER`を自動送信します。
+- GmsCoreから返されたトークンを値そのものは記録せず検証し、Firebase標準の`com.google.android.gms.appid`保存形式へ版と時刻付きで同期しました。Firebase初期化前の通知再試行から登録処理を分離し、45秒間のコールド起動ログで登録要求・応答が各1回、再登録0件、FATAL・ANR 0件であることを確認しました。
+- ReVanced GmsCoreの「Cloud Messaging」画面で「Google ReVanced」が「プッシュ通知を使用するアプリ」に追加され、Google ReVancedのホームで天気、スポーツ、Discover記事カードと操作ボタンが表示されることをUI階層とスクリーンショットで確認しました。
+- 最終RVPをGoogleアプリ17.50.19と17.52.24へReVanced CLI 6.0.0で適用し、両版で2パッチ、全DEX、資源再構築、整列、署名が成功しました。両成果物で固有Provider、クローン名GCMカテゴリ、直接登録、応答処理、Firebase通知ブリッジを確認しました。
+- ReVanced Manager 2.6.0へ最終RVPをローカル登録し、17.52.24で準備2/2、パッチ適用3/3、保存2/2を完了しました。既存Manager署名鍵でデータを保持した上書きインストールが成功し、`lastUpdateTime`が2026-09-02 05:44:15へ更新されました。
 
 ## 目視確認項目
 
