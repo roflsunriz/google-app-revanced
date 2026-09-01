@@ -110,6 +110,8 @@ val gmsCoreSupportPatch = bytecodePatch(
             },
         )
 
+        patchApiClientHeaders()
+
         val processExitMatches = classDefs.asSequence()
             .flatMap { it.methods.asSequence() }
             .mapNotNull { method ->
