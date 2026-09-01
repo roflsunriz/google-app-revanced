@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-09-01
+
 ### Fixed
 
 - ReVanced Managerの通常プロセスでは巨大なGoogle アプリのDEX再構築が`classes17.dex`付近で数時間停滞するため、640MiB未満のヒープを早期検出して別プロセス実行を案内し、実用的でない待機を防ぐようにしました。
@@ -48,6 +50,7 @@
 - 広告ID、AdServices attribution、昇格通知権限と広告測定コンポーネントを無効化し、広告SDKへ識別子や測定イベントが渡る経路を削減しました。
 - ビルド・検証経路の既知脆弱性を除くため、Netty、Protobuf、Commons Lang、Apache HttpClient、Bouncy Castleの推移依存をOSV修正版へ固定しました。
 
-[Unreleased]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/roflsunriz/google-app-revanced/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/roflsunriz/google-app-revanced/releases/tag/v0.1.0
