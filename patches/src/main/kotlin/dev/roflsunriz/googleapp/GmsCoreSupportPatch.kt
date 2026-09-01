@@ -34,6 +34,9 @@ private const val SYSTEM_EXIT_RETURNED_ERROR =
     "System.exit returned normally, while it was supposed to halt JVM."
 
 private const val SPATULA_HEADER_ERROR = "Could not retrieve spatula header"
+private const val GOOGLE_CERTIFICATES_ERROR = "Failed to get Google certificates from remote"
+private const val PIXEL_LAUNCHER_QSB_PERMISSION =
+    "com.google.android.apps.nexuslauncher.permission.QSB"
 
 internal val gmsCoreResourcesPatch = resourcePatch {
     compatibleWith(ORIGINAL_PACKAGE)
@@ -67,10 +70,12 @@ val gmsCoreSupportPatch = bytecodePatch(
             """.trimIndent(),
         )
 
-        val processSelector = classDefs.flatMap { it.methods }.singleOrNull { method ->
-            method.containsString("com.google.android.googlequicksearchbox:googleapp") &&
-                method.containsString("com.google.android.googlequicksearchbox:ar_runtime_loader")
-        } ?: throw PatchException("Google app Dagger process selector was not found")
+        val processSelector = classDefs.asSequence()
+            .flatMap { it.methods.asSequence() }
+            .singleOrNull { method ->
+                method.containsString("com.google.android.googlequicksearchbox:googleapp") &&
+                    method.containsString("com.google.android.googlequicksearchbox:ar_runtime_loader")
+            } ?: throw PatchException("Google app Dagger process selector was not found")
         val mutableProcessSelector = firstMethod(processSelector)
         val processNameIndex = mutableProcessSelector.instructionsOrNull
             ?.indexOfFirst { instruction ->
@@ -105,19 +110,25 @@ val gmsCoreSupportPatch = bytecodePatch(
             },
         )
 
-        val disabledProcessExits = classDefs.flatMap { it.methods }
-            .sumOf { method ->
-                val mutableMethod = firstMethod(method)
-                val exitIndexes = mutableMethod.instructionsOrNull
+        val processExitMatches = classDefs.asSequence()
+            .flatMap { it.methods.asSequence() }
+            .mapNotNull { method ->
+                val exitIndexes = method.instructionsOrNull
+                    ?.toList()
                     .orEmpty()
                     .mapIndexedNotNull { index, instruction ->
                         val reference = (instruction as? ReferenceInstruction)?.reference as? MethodReference
                             ?: return@mapIndexedNotNull null
                         index.takeIf { reference.toString() in processExitMethods }
                     }
-                exitIndexes.forEach { index -> mutableMethod.replaceInstruction(index, "nop") }
-                exitIndexes.size
+                exitIndexes.takeIf { it.isNotEmpty() }?.let { method to it }
             }
+            .toList()
+        processExitMatches.forEach { (method, exitIndexes) ->
+            val mutableMethod = firstMethod(method)
+            exitIndexes.forEach { index -> mutableMethod.replaceInstruction(index, "nop") }
+        }
+        val disabledProcessExits = processExitMatches.sumOf { (_, exitIndexes) -> exitIndexes.size }
         if (disabledProcessExits == 0) {
             throw PatchException("Google app process reapers were not found")
         }
@@ -129,40 +140,52 @@ val gmsCoreSupportPatch = bytecodePatch(
         }
         systemExitWrappers.forEach { firstMethod(it).addInstructions(0, "return-void") }
 
-        val unsupportedFeatureFields = classDefs.flatMap { it.methods }.flatMap { method ->
-            val instructions = method.instructionsOrNull?.toList().orEmpty()
-            instructions.mapIndexedNotNull { index, instruction ->
-                val featureName = ((instruction as? ReferenceInstruction)?.reference as? StringReference)?.string
-                    ?.takeIf { it in unsupportedPhenotypeFeatures }
-                    ?: return@mapIndexedNotNull null
-                instructions.drop(index + 1).take(16).firstNotNullOfOrNull { candidate ->
-                    if (candidate.opcode != Opcode.SPUT_OBJECT) return@firstNotNullOfOrNull null
-                    (candidate as? ReferenceInstruction)?.reference as? FieldReference
-                } ?: throw PatchException("Phenotype feature field was not found for $featureName")
+        val unsupportedFeatureFields = classDefs.asSequence()
+            .flatMap { it.methods.asSequence() }
+            .flatMap { method ->
+                val instructions = method.instructionsOrNull?.toList().orEmpty()
+                instructions.mapIndexedNotNull { index, instruction ->
+                    val featureName = ((instruction as? ReferenceInstruction)?.reference as? StringReference)?.string
+                        ?.takeIf { it in unsupportedPhenotypeFeatures }
+                        ?: return@mapIndexedNotNull null
+                    instructions.drop(index + 1).take(16).firstNotNullOfOrNull { candidate ->
+                        if (candidate.opcode != Opcode.SPUT_OBJECT) return@firstNotNullOfOrNull null
+                        (candidate as? ReferenceInstruction)?.reference as? FieldReference
+                    } ?: throw PatchException("Phenotype feature field was not found for $featureName")
+                }.asSequence()
             }
-        }.map(FieldReference::toString).toSet()
+            .map(FieldReference::toString)
+            .toSet()
         if (unsupportedFeatureFields.size != unsupportedPhenotypeFeatures.size) {
             throw PatchException("Phenotype feature fields were not found")
         }
 
-        val removedFeatureRequirements = classDefs.flatMap { it.methods }.sumOf { method ->
-            val mutableMethod = firstMethod(method)
-            val instructions = mutableMethod.instructionsOrNull?.toList().orEmpty()
-            val requirementIndexes = instructions.mapIndexedNotNull { index, instruction ->
-                if (instruction.opcode != Opcode.SGET_OBJECT) return@mapIndexedNotNull null
-                val field = (instruction as? ReferenceInstruction)?.reference as? FieldReference
-                    ?: return@mapIndexedNotNull null
-                index.takeIf { field.toString() in unsupportedFeatureFields }
+        val featureRequirementMatches = classDefs.asSequence()
+            .flatMap { it.methods.asSequence() }
+            .mapNotNull { method ->
+                val instructions = method.instructionsOrNull?.toList().orEmpty()
+                val replacements = instructions.mapIndexedNotNull { index, instruction ->
+                    if (instruction.opcode != Opcode.SGET_OBJECT) return@mapIndexedNotNull null
+                    val field = (instruction as? ReferenceInstruction)?.reference as? FieldReference
+                        ?: return@mapIndexedNotNull null
+                    val fieldIndex = index.takeIf { field.toString() in unsupportedFeatureFields }
+                        ?: return@mapIndexedNotNull null
+                    val aputIndex = ((fieldIndex + 1)..minOf(fieldIndex + 6, instructions.lastIndex))
+                        .firstOrNull { instructions[it].opcode == Opcode.APUT_OBJECT }
+                        ?: throw PatchException("Phenotype feature requirement array was not found")
+                    val arrayRegister = (instructions[aputIndex] as ThreeRegisterInstruction).registerB
+                    aputIndex to arrayRegister
+                }
+                replacements.takeIf { it.isNotEmpty() }?.let { method to it }
             }
-            requirementIndexes.sumOf { fieldIndex ->
-                val aputIndex = ((fieldIndex + 1)..minOf(fieldIndex + 6, instructions.lastIndex))
-                    .firstOrNull { instructions[it].opcode == Opcode.APUT_OBJECT }
-                    ?: throw PatchException("Phenotype feature requirement array was not found")
-                val arrayRegister = (instructions[aputIndex] as ThreeRegisterInstruction).registerB
+            .toList()
+        featureRequirementMatches.forEach { (method, replacements) ->
+            val mutableMethod = firstMethod(method)
+            replacements.forEach { (aputIndex, arrayRegister) ->
                 mutableMethod.replaceInstruction(aputIndex, "const/4 v$arrayRegister, 0x0")
-                1
             }
         }
+        val removedFeatureRequirements = featureRequirementMatches.sumOf { (_, replacements) -> replacements.size }
         if (removedFeatureRequirements < unsupportedPhenotypeFeatures.size) {
             throw PatchException("Phenotype feature requirements were not removed")
         }
@@ -176,6 +199,47 @@ val gmsCoreSupportPatch = bytecodePatch(
             throw PatchException("Google Play Services availability check was not found")
         }
         serviceChecks.forEach { firstMethod(it).addInstructions(0, "return-void") }
+
+        val googleCertificateClasses = findMethodsContaining(GOOGLE_CERTIFICATES_ERROR)
+            .map { method -> method.definingClass }
+            .toSet()
+        val pixelLauncherTrustCandidates = findMethodsContaining(PIXEL_LAUNCHER_QSB_PERMISSION)
+        val pixelLauncherTrustMatches = pixelLauncherTrustCandidates.mapNotNull { method ->
+            val instructions = method.instructionsOrNull?.toList().orEmpty()
+            val permissionIndex = instructions.indexOfFirst { instruction ->
+                ((instruction as? ReferenceInstruction)?.reference as? StringReference)?.string ==
+                    PIXEL_LAUNCHER_QSB_PERMISSION
+            }.takeIf { it >= 0 } ?: return@mapNotNull null
+            val certificateCheckIndex = ((permissionIndex + 1)..minOf(permissionIndex + 96, instructions.lastIndex))
+                .firstOrNull { index ->
+                    val instruction = instructions[index]
+                    val reference = (instruction as? ReferenceInstruction)?.reference as? MethodReference
+                        ?: return@firstOrNull false
+                    instruction.opcode in setOf(Opcode.INVOKE_VIRTUAL, Opcode.INVOKE_VIRTUAL_RANGE) &&
+                        reference.definingClass in googleCertificateClasses &&
+                        reference.parameterTypes.map { it.toString() } == listOf("Ljava/lang/String;") &&
+                        reference.returnType == "Z" &&
+                        instructions.getOrNull(index + 1)?.opcode == Opcode.MOVE_RESULT
+                } ?: return@mapNotNull null
+            val resultRegister = (instructions[certificateCheckIndex + 1] as? OneRegisterInstruction)?.registerA
+                ?: return@mapNotNull null
+
+            Triple(method, certificateCheckIndex, resultRegister)
+        }
+        if (pixelLauncherTrustMatches.isEmpty()) {
+            throw PatchException(
+                "Pixel Launcher certificate check was not found " +
+                    "(${pixelLauncherTrustCandidates.size} candidates)",
+            )
+        }
+        pixelLauncherTrustMatches.forEach { (method, certificateCheckIndex, resultRegister) ->
+            val mutableMethod = firstMethod(method)
+
+            // The package is already required to be a system app declaring the Pixel Launcher QSB permission.
+            // Avoid the Dynamite GoogleCertificates module, which cannot initialize under ReVanced GmsCore.
+            mutableMethod.replaceInstruction(certificateCheckIndex, "const/16 v$resultRegister, 0x1")
+            mutableMethod.replaceInstruction(certificateCheckIndex + 1, "nop")
+        }
 
         findMethodsContaining("MetadataValueReader")
             .filter { method ->
@@ -230,7 +294,10 @@ val gmsCoreSupportPatch = bytecodePatch(
 }
 
 private fun app.revanced.patcher.patch.BytecodePatchContext.findMethodsContaining(value: String): List<Method> =
-    classDefs.flatMap { it.methods }.filter { it.containsString(value) }
+    classDefs.asSequence()
+        .flatMap { it.methods.asSequence() }
+        .filter { it.containsString(value) }
+        .toList()
 
 private fun Method.containsString(value: String) = instructionsOrNull?.any { instruction ->
     ((instruction as? ReferenceInstruction)?.reference as? StringReference)?.string == value

@@ -52,13 +52,15 @@ internal fun BytecodePatchContext.patchAdNetworkBoundaries() {
 }
 
 internal fun BytecodePatchContext.patchComposeAdContainers() {
-    classDefs.flatMap { classDef -> classDef.methods }
+    classDefs.asSequence()
+        .flatMap { classDef -> classDef.methods.asSequence() }
         .filter { method ->
             method.instructionsOrNull?.any { instruction ->
                 val value = ((instruction as? ReferenceInstruction)?.reference as? StringReference)?.string
                 value != null && value.contains("_ads_container_test_tag")
             } == true
         }
+        .toList()
         .forEach { method ->
             val instructions: List<Instruction> = method.instructionsOrNull?.toList() ?: emptyList()
             val markerIndex = instructions.indexOfFirst { instruction ->

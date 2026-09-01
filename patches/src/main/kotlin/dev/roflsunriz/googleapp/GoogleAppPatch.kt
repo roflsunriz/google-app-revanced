@@ -1,11 +1,27 @@
 package dev.roflsunriz.googleapp
 
+import app.revanced.patcher.extensions.addInstructions
+import app.revanced.patcher.firstMethodOrNull
+import app.revanced.patcher.patch.PatchException
 import app.revanced.patcher.patch.bytecodePatch
 import app.revanced.patcher.patch.resourcePatch
-import app.revanced.patcher.firstMethodOrNull
-import app.revanced.patcher.extensions.addInstructions
 
 private const val GOOGLE_APP_PACKAGE = "com.google.android.googlequicksearchbox"
+private const val MEBIBYTE = 1024L * 1024L
+internal const val MINIMUM_PATCHER_HEAP_MIB = 640L
+
+internal fun requireSufficientPatcherHeap(maxMemoryBytes: Long = Runtime.getRuntime().maxMemory()) {
+    val maximumHeapMib = maxMemoryBytes / MEBIBYTE
+    if (maximumHeapMib >= MINIMUM_PATCHER_HEAP_MIB) return
+
+    throw PatchException(
+        "Google アプリに対して現在のPatcherヒープ（${maximumHeapMib} MiB）は不足しています。" +
+            "ReVanced Managerの「設定」→「高度な設定」で「Patcherを別のプロセスで実行」を有効にし、" +
+            "メモリ上限を700 MiB以上にしてください。 " +
+            "The Google App requires at least a 700 MiB patcher heap. Enable Settings > Advanced > " +
+            "Run Patcher in another process in ReVanced Manager.",
+    )
+}
 
 internal val googleAppResourcesPatch = resourcePatch {
     compatibleWith(GOOGLE_APP_PACKAGE)
@@ -73,6 +89,7 @@ val googleAppReVancedPatch = bytecodePatch(
     extendWith("extensions/googleapp.rve")
 
     apply {
+        requireSufficientPatcherHeap()
         patchAdNetworkBoundaries()
         patchComposeAdContainers()
         firstMethodOrNull {

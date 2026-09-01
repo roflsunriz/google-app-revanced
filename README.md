@@ -36,7 +36,9 @@ https://github.com/roflsunriz/google-app-revanced/releases/latest/download/patch
 
 その後「Apps」タブから単一APKを選び、既定の2パッチを適用します。APK bundle、XAPK、APKM、APKSは先に単一APKへ統合してください。公式Managerの現在の操作は[Managing patches](https://github.com/ReVanced/revanced-manager/blob/main/docs/2_3_managing_patches.md)と[Patching apps](https://github.com/ReVanced/revanced-manager/blob/main/docs/2_1_patching.md)も参照してください。
 
-ReVanced Manager 2.6.0では、端末やAPKによってパッチ完了後の「APKファイルを書き込み」が長時間0/2のまま進まない場合があります。数十分変化がなければキャンセルしてください。この場合でも公開RVPをReVanced CLIで同じAPKへ適用できます。実測の詳細は[verification.md](verification.md)に記録しています。
+Google アプリは約230MB・14 DEX以上あるため、通常のManagerプロセスに割り当てられる512MiBでは、パッチ後DEXの書き込みが`classes17.dex`付近で極端に遅くなります。パッチ前にManagerの「設定」→「高度な設定」で「Patcherを別のプロセスで実行」を有効にし、メモリ上限を700MiB以上にしてください。端末の空きメモリに余裕があれば1024MiBを推奨します。
+
+メモリ上限が640MiB未満の場合、このパッチは数時間待たせる代わりに、設定変更を案内するエラーで早期停止します。700MiB制限で複数世代のGoogle アプリを最後まで再構築できることを確認しています。実測の詳細は[verification.md](verification.md)に記録しています。
 
 ## APKの準備
 

@@ -4,6 +4,13 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- ReVanced Managerの通常プロセスでは巨大なGoogle アプリのDEX再構築が`classes17.dex`付近で数時間停滞するため、640MiB未満のヒープを早期検出して別プロセス実行を案内し、実用的でない待機を防ぐようにしました。
+- 多DEX走査中の一時メモリと不要な再変換を減らすため、GmsCore互換処理を対象メソッド検出後にだけmutable化し、全メソッドの巨大な中間リストを遅延走査へ変更しました。
+- ReVanced GmsCore環境でPixel Launcherの信頼確認がDynamite版GoogleCertificatesを初期化できず起動停止するため、systemアプリとQSB権限を確認済みのLauncher連携箇所だけを限定的に信頼するよう修正しました。
+- DependabotのJUnit 6.1.3更新後も依存ロック競合なくテストできるよう、マージ後の全構成からGradle lockfileを再生成しました。
+
 ## [0.2.0] - 2026-09-01
 
 ### Added
