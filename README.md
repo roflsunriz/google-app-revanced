@@ -36,6 +36,8 @@ https://github.com/roflsunriz/google-app-revanced/releases/latest/download/patch
 
 その後「Apps」タブから単一APKを選び、既定の2パッチを適用します。APK bundle、XAPK、APKM、APKSは先に単一APKへ統合してください。公式Managerの現在の操作は[Managing patches](https://github.com/ReVanced/revanced-manager/blob/main/docs/2_3_managing_patches.md)と[Patching apps](https://github.com/ReVanced/revanced-manager/blob/main/docs/2_1_patching.md)も参照してください。
 
+ReVanced Manager 2.6.0では、端末やAPKによってパッチ完了後の「APKファイルを書き込み」が長時間0/2のまま進まない場合があります。数十分変化がなければキャンセルしてください。この場合でも公開RVPをReVanced CLIで同じAPKへ適用できます。実測の詳細は[verification.md](verification.md)に記録しています。
+
 ## APKの準備
 
 このリポジトリはAPKを配布しません。APKMirror、APKPure、Uptodownなどから対象APKを取得し、入手元、版、CPUアーキテクチャ、SHA-256を記録してください。
