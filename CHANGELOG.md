@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-09-02
+
 ### Fixed
 
 - クローン版の音声検索、曲検索、Assistant系APIが`X-Android-Package`へクローン名を送りGoogle APIから拒否される問題を防ぐため、API認証ヘッダーの直接キーと静的キーを横断検出し、入力APK内の公式パッケージ名・公式API証明書へ限定的に置換するようにしました。
@@ -54,7 +56,8 @@
 - 広告ID、AdServices attribution、昇格通知権限と広告測定コンポーネントを無効化し、広告SDKへ識別子や測定イベントが渡る経路を削減しました。
 - ビルド・検証経路の既知脆弱性を除くため、Netty、Protobuf、Commons Lang、Apache HttpClient、Bouncy Castleの推移依存をOSV修正版へ固定しました。
 
-[Unreleased]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/roflsunriz/google-app-revanced/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/roflsunriz/google-app-revanced/releases/tag/v0.1.0
