@@ -79,3 +79,9 @@
 - ReVanced GmsCoreのGoogle端末登録、Cloud Messaging、デバイス認証を有効にする必要があります。
 - 初回のアカウント連携ではGmsCoreのログイン画面が開く場合があります。認証情報をログやIssueへ貼らないでください。
 - Assistant、Lensなど、端末固有権限や追加モジュールを使う機能は検索・Discover経路とは別に確認が必要です。音声検索と曲検索は上記17.52.24の実機確認を基準にします。
+
+## Dependabot 自動処理（2026-09-23）
+
+`.github/workflows/dependabot-automation.yml` を actionlint で検査し、PR 用 workflow 名（CI）と一致することを確認する。Dependabot の patch／minor かつ全 PR チェック成功の場合だけ取り込み、major・古い SHA・再失敗は残す。
+
+実際の Dependabot PR がまだない場合、動作経路は未検証として扱う。実 PR 発生後に自動化ジョブ、CI の再試行、マージ結果を確認する。
