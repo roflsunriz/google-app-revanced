@@ -16,3 +16,8 @@ Get-Content -Raw -LiteralPath .\COMMON-AGENTS.md
 ## 目的
 - Google(ID:com.google.android.googlequicksearchbox)アプリ用のReVanced patchを作る
 - 広告を除去する
+
+## GitHub受付テンプレートの保守
+
+- `.github/ISSUE_TEMPLATE/config.yml` はIssue作成画面の受付設定専用とし、設定・互換性の相談フォームは `configuration.yml` に置く。予約名へフォームの `name` や `body` を配置しない。
+- 受付フォームを変更するときは、既存の `id`、選択肢、必須条件、固有の質問と案内を保全する。ワークフローが解析する見出し（`対象領域`、`OS` など）がある場合は、対応する解析処理との整合を確認する。根拠は `.github/ISSUE_TEMPLATE/` と `.github/workflows/`。
