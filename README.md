@@ -20,7 +20,7 @@ Google署名の標準アプリは別証明書で上書きできないため、�
 3. Google アプリの単一APKを選び、既定の「GmsCore support」と「Google ReVanced」を両方適用します。
 4. 「Google ReVanced」をインストールします。
 5. Androidの「設定」→「アプリ」→標準の「Google」を開き、「無効にする」を選びます。
-6. 「Google ReVanced」を起動します。起動後にCloud Messaging登録が自動要求されるため、ReVanced GmsCoreの「Cloud Messaging」→「Cloud Messagingを使用するアプリ」に「Google ReVanced」が追加され、Discover、検索結果、Google設定内の「Google ReVanced」が開くことを確認します。初回だけGmsCoreのアカウント選択や登録許可が表示される場合があります。
+6. 「Google ReVanced」を起動します。起動後にCloud Messagingの登録が自動要求されます。ReVanced GmsCoreの「Cloud Messaging」→「Cloud Messagingを使用するアプリ」に「Google ReVanced」が追加されたことを確認します。Discover、検索結果、Google設定内の「Google ReVanced」が開くことも確認します。初回だけGmsCoreのアカウント選択や登録許可が表示される場合があります。
 
 問題があれば標準Googleアプリを「有効にする」へ戻し、`app.revanced.android.googleapp`をアンインストールすれば復旧できます。純正版とクローンを同時に有効にするとGoogle側の構成更新でクローンが終了するため、クローンの初回起動前に純正版を無効化してください。
 
@@ -38,7 +38,7 @@ https://github.com/roflsunriz/google-app-revanced/releases/latest/download/patch
 
 Google アプリは約230MB・14 DEX以上あるため、通常のManagerプロセスに割り当てられる512MiBでは、パッチ後DEXの書き込みが`classes17.dex`付近で極端に遅くなります。パッチ前にManagerの「設定」→「高度な設定」で「Patcherを別のプロセスで実行」を有効にし、メモリ上限を700MiB以上にしてください。端末の空きメモリに余裕があれば1024MiBを推奨します。
 
-メモリ上限が640MiB未満の場合、このパッチは数時間待たせる代わりに、設定変更を案内するエラーで早期停止します。700MiB制限で複数世代のGoogle アプリを最後まで再構築できることを確認しています。実測の詳細は[verification.md](verification.md)に記録しています。
+メモリ上限が640MiB未満の場合、このパッチは、数時間かかる処理を続けずに早期停止し、エラーで設定変更を案内します。700MiB制限で複数世代のGoogle アプリを最後まで再構築できることを確認しています。実測の詳細は[verification.md](verification.md)に記録しています。
 
 ## APKの準備
 

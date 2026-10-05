@@ -12,6 +12,6 @@
 
 ## 問い合わせ
 
-不具合はBug report、設定や互換性はConfig、文書はDocumentationのIssueテンプレートを使ってください。一般質問や提案はDiscussionsを利用してください。
+不具合はBug report、設定や互換性はConfig、文書はDocumentationのIssueテンプレートを使ってください。機能提案は「機能提案」フォーム、一般質問は公開できる情報だけを含むIssueを利用してください。
 
 Google アプリAPKの入手、Googleアカウント復旧、root化、端末固有のブートループはサポート対象外です。
