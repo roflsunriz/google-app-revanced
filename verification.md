@@ -11,6 +11,14 @@
 - 外部呼び出し: 公開検索カテゴリ、検索・アシスタントのexported alias、検索メタデータ、VoiceInteractionServiceのシステム権限を保持し、GCMのRECEIVE/REGISTRATIONカテゴリだけを変換
 - GmsCompliance: 機能判定のBoolean分岐、range呼び出し、高位レジスタ、未知・曖昧な構造の拒否
 
+## 2026-10-11: v0.2.4の公開準備
+
+- `gradle.properties`を0.2.4へ更新し、未リリースの変更を2026-10-11の変更履歴へ移した。`scripts/generate-patches-json.ps1`でルートJSON、`scripts/extract-changelog.ps1`で公開本文を生成した。
+- クリーンビルド・29テスト・Android lint・Android用RVP構造検査が成功し、RVP manifestのVersionが0.2.4であることを確認した。OSV-Scanner 2.6.0でlockfile 226パッケージの既知脆弱性0件を確認した。
+- Gradle 9.8.1、smali 3.0.10、JUnit Jupiter 6.1.3、JUnit 4.13.2、Bouncy Castle 1.86が各公式メタデータの公開最新版と一致することを確認した。ReVanced Patcherは公開安定版22.0.1、Gradleプラグインは公開タグdev.11を維持した。
+- 現在の共通Dependabot workflow（固定SHA `8bcb79de73249f04e83d0a6071d30ac025710a17`）はmajor更新も対象にし、再試行失敗後は許可されたlockfileの修復を試みる。READMEと更新手順に残っていた旧説明を修正した。下記2026-09-23の記録は当時の運用である。
+- Pixel 10aの再現確認と修正版インストール後の動作は未検証のまま、READMEと公開本文へ明記した。
+
 ## 2026-10-11: Issue #6・#8の解析とローカル検証
 
 - 作業前のmainは`44aded1698625c73b52f8a3ea34d2e13c67e4957`、未コミット差分は0件。

@@ -33,6 +33,14 @@
 13. `git diff --check`、Git状態、秘密情報、生成物混入を確認してコミット・プッシュ・タグ作成します。
 14. リリースのRVPと`patches.json`を取得し、ローカル生成物と同じ構造であることを再確認します。
 
+## リリース公開
+
+`gradle.properties`と`CHANGELOG.md`の版・日付を揃え、`scripts/generate-patches-json.ps1 -Version <version> -OutputPath patches.json`でリポジトリの配布メタデータも更新します。ローカルの検証と監査後にmainへpushし、CIの成功を確認してから同じコミットへ`v<version>`タグを付けてpushします。
+
+タグのpushで`.github/workflows/release.yml`がテスト・ビルド・RVP構造検査を行い、該当版の変更履歴を本文にしたリリースへ`google-app-patches.rvp`と`patches.json`を公開します。公開後に両ファイルを取得し、JSONの版と配布URL、Android用DEXと拡張、ビルド証明を確認します。Managerの既存URLソースにも新しい版が表示されることを確認します。
+
+リリース済みタグの付け替えや過去リリースの上書きは行わず、問題があれば修正コミットと次の版で配布します。
+
 ## 外部呼び出しと起動制限の回帰確認
 
 - アプリ内の「Google ReVanced」から既定アシスタントの選択画面を開き、キャンセル時に既定値が変わらないこと、Google ReVanced選択後に標準アシスタント呼び出しが届くことを確認します。
@@ -58,7 +66,7 @@ Google APKは`$$`で始まるdrawable名を含みます。SDK標準AAPT2が`inva
 
 ## Dependabot PR の更新
 
-前提は `.github/dependabot.yml` と PR 用 CI（CI）です。更新 PR の head SHA と `gh pr checks <PR番号>` の結果を確認してください。patch／minor は全チェック成功後に自動取り込みされます。初回 CI 失敗は failed jobs のみを 1 回再実行し、再失敗した PR は残して手動で修正します。
+前提は `.github/dependabot.yml` と PR 用 CI（CI）です。更新PRのhead SHAと`gh pr checks <PR番号>`の結果を確認してください。patch／minor／majorは現在のコミットの全チェック成功後に自動取り込みされます。初回CI失敗はfailed jobsだけを1回再実行し、再失敗時は許可された3つのGradle lockfileを再生成して再検証します。修復できないPRは手動で対応します。
 
 設定を変えたときは `actionlint .github/workflows/dependabot-automation.yml` と実際の PR の Actions 結果を確認します。問題があれば呼び出し先の共通 workflow SHA を直前の検証済み値へ戻すコミットを push します。取り込まれた依存更新に問題があれば通常の revert コミットで復旧します。
 

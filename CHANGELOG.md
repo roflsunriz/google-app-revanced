@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.2.4] - 2026-10-11
+
+Googleアプリ17.50.19と17.52.24でパッチ適用・再構築・署名、AQUOSのReVanced Manager 2.6.0でインストール直前まで確認しました。Pixel 10aでの起動拒否の改善、修正版インストール後のコンポーネント復旧と新しいアシスタント設定の操作は未確認です。
+
 ### Fixed
 
 - ReVanced GmsCore利用時の起動拒否とアプリ内コンポーネント無効化を防ぐため、GmsComplianceの機能判定だけを既存の無効経路へ切り替え、以前無効化されたコンポーネントの復旧処理を保った。
@@ -24,7 +28,7 @@
 
 - 不具合・機能提案などの受付とPRの記入形式を揃え、プロジェクト固有の確認項目を残した。 READMEは既存の意味と手順を保ち、実装と異なる説明や読みにくい表現を修正した。
 
-- 依存更新を安全に省力化するため、Dependabot の patch／minor PR を既存 CI の全チェック成功後に自動取り込みし、失敗ジョブを一度再実行する設定を追加した。
+- 依存更新を安全に省力化するため、Dependabotのpatch／minor／major PRを現在のコミットの全チェック成功後に自動取り込みし、失敗ジョブの再実行と対象を限定したGradle lockfile修復を行う設定を追加した。運用文書も現在の設定へ揃えた。
 
 ## [0.2.3] - 2026-09-02
 
@@ -84,7 +88,8 @@
 - 広告ID、AdServices attribution、昇格通知権限と広告測定コンポーネントを無効化し、広告SDKへ識別子や測定イベントが渡る経路を削減しました。
 - ビルド・検証経路の既知脆弱性を除くため、Netty、Protobuf、Commons Lang、Apache HttpClient、Bouncy Castleの推移依存をOSV修正版へ固定しました。
 
-[Unreleased]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.4...HEAD
+[0.2.4]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/roflsunriz/google-app-revanced/compare/v0.2.0...v0.2.1

@@ -43,6 +43,8 @@ rootマウントで元パッケージを維持する場合は、Managerの高度
 
 「GmsCore support」は、Googleアプリ内のGmsComplianceによる起動制限を、その機能を使わない既存の経路へ切り替えます。以前の制限で無効化されたアプリ内コンポーネントは、Googleアプリ自身の復旧処理へ渡します。AndroidやPlayストアの端末認定、Play Protectの設定は変更しません。
 
+この対応はv0.2.4以降に含まれます。Pixel 10aでの改善と修正版インストール後の動作は未確認です。検証した範囲は[verification.md](verification.md)を参照してください。
+
 修正版RVPで元APKを再パッチし、同じManager署名鍵で更新してから起動してください。データを消去したりPlay Protectを無効にしたりする必要はありません。改善しない場合は、端末・Googleアプリ・GmsCoreの版、拒否画面、秘密情報を除いた起動ログをIssueへ添えてください。
 
 ## ReVanced Managerへパッチを追加する
@@ -93,4 +95,4 @@ Google アプリの「設定」一覧末尾に「Google ReVanced」が追加さ�
 
 ## 依存更新の自動処理
 
-Dependabot は対象の依存関係を毎週確認します。patch／minor 更新は PR のチェック（CI）が成功した後に自動で squash merge されます。CI の失敗ジョブは 1 回だけ再実行します。再失敗した PR は残して手動で修正します。major 更新は手動で確認します。
+Dependabot は対象の依存関係を毎週確認します。patch／minor／major 更新は、現在のPRのコミットと全チェックの成功を確認した後に自動でsquash mergeされます。CIの失敗ジョブは1回だけ再実行し、再失敗時は対象を限定したGradle lockfileの再生成と再検証を試みます。修復できないPRは手動で対応します。
