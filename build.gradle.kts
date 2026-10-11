@@ -11,7 +11,7 @@ allprojects {
         resolutionStrategy.eachDependency {
             val securedVersion = when {
                 requested.group == "io.netty" -> "4.1.137.Final"
-                requested.group == "org.bouncycastle" -> "1.84"
+                requested.group == "org.bouncycastle" -> "1.86"
                 requested.group == "com.google.protobuf" -> "3.25.5"
                 requested.group == "org.apache.commons" && requested.name == "commons-lang3" -> "3.20.0"
                 requested.group == "org.apache.httpcomponents" && requested.name == "httpclient" -> "4.5.13"
