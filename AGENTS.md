@@ -24,6 +24,7 @@ Get-Content -Raw -LiteralPath .\COMMON-AGENTS.md
 - 非rootクローンは元パッケージを明示したIntentを横取りできない。Issue #8の対象はユーザー確認により標準の検索・アシスタント呼び出し。Android側の既定アシスタント選択を必要とする。
 - 17.52.24とAQUOSから採取した17.54.11のDEXでは、GmsComplianceの非対応判定が`UncertifiedDeviceActivity`への転送だけでなく、services/receivers/providersの無効化も行う。拒否画面だけを隠しても復旧しない。GmsCore support内の`GmsCompliancePatch.kt`は2つのログ文字列とBoolean分岐を検出し、既存のfeature-disabled経路へ切り替えてcomponent resetを残す。Pixelでの修正確認は別途必要。
 - Google APKの`$$` drawable名はSDK標準AAPT2 37.0.0で再構築に失敗する。CLI検証ではReVanced CLI既定のAAPT2を使い、`--custom-aapt2-binary`でSDK標準版へ置き換えない。17.50.19/17.52.24で確認（2026-10-11）。
+- Gradle wrapper更新では、旧Gradleによる`wrapper --gradle-version`実行後、新しいGradleでも`wrapper`を再実行してJARも更新する。配布ZIPの`distributionSha256Sum`とwrapper JARの公式SHA-256を両方確認する。Gradle 9.8.1で確認（2026-10-11）。
 
 ## GitHub受付テンプレートの保守
 

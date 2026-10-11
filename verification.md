@@ -22,7 +22,12 @@
 - 自動テスト、Android lint、全ビルド、Android用RVP構造検査は成功。ビルドプラグイン1.0.0-dev.11由来のGradle非推奨APIとSDK XML世代の警告は残る。公開タグではdev.11が最新であり、この作業で未公開プラグインへ変更していない。
 - OSV-Scanner 2.6.0は当初Bouncy Castle 1.84の`GHSA-9pwp-9qqc-pr26`と`GHSA-qp49-qgx5-5m26`を検出した。公式配布元とMaven Centralで1.86を確認し、関連4モジュールを更新後、lockfile 225パッケージの既知脆弱性0件を確認した。
 - SDK標準AAPT2 37.0.0では元APKの`$$` drawable名を拒否した。ReVanced CLI 6.0.0の既定AAPT2では同じ入力が再構築できたため、検証手順を更新した。
-- 実機UIはNyTweetDeckの端末利用終了後に確認する。Pixel 10aはADB接続されておらず、同端末の起動拒否に対する修正結果は未検証。AQUOSでの正常起動だけをPixelの修正確認として扱わない。
+- NyTweetDeckの解放後にAQUOS（SH-R80P / Android 16）を使用し、Manager 2.6.0へローカルRVPを登録した。公開版との重複を外して修正版2パッチだけを17.52.24へ適用し、準備2/2、パッチ適用3/3、保存2/2、18 DEX生成、資源再構築、整列、署名を完了し「インストール」ボタンへ到達した。更新インストールは承認がなく実施していない。生成版17.52.24を既存17.54.11へ上書きしていない。
+- 既存17.54.11の標準WEB_SEARCHをパッケージ指定なしで呼び、Androidの選択画面からGoogle ReVancedを「1回のみ」で選択した。クローンの`com.google.android.search.core.google.GoogleSearch`に遷移し、検索語`ReVanced`が保持されることをUI階層で確認した。GLOBAL_SEARCH（元SEARCH_WIDGETカテゴリ付き）とVOICE_ASSISTもクローンを候補として解決した。既定アシスタントは作業前後ともクローンの`GsaVoiceInteractionService`で、設定は変更していない。この確認は修正版インストール後の検証ではない。
+- 新しいアシスタント設定行の選択・キャンセルとGmsComplianceのコンポーネント復旧は、修正版をインストールしていないため実機では未確認。Pixel 10aはADB接続されておらず、同端末の起動拒否に対する修正結果も未検証。AQUOSの正常起動をPixelの修正確認として扱わない。
+- 公開main `d10b622`の[CI](https://github.com/roflsunriz/google-app-revanced/actions/runs/38129013178)は全ジョブ成功。追加の最新版確認でGradle 9.8.1とsmali 3.0.10を確認し、wrapperを生成して配布ZIP/JARの公式SHA-256を照合した。更新後も29テストと全ビルドが成功し、lockfile 226パッケージの既知脆弱性0件を確認した。
+- Gradle/smali更新後の最終RVPも17.52.24で2パッチ、19 DEX生成、資源再構築、整列、署名まで成功した。最終APKの実DEXにも検査コードを直接実行し、feature-disabled分岐を再確認した。
+- 検証終了後、Managerから今回のローカルソースだけを削除し、公開Googleソースが有効であることを確認した。共有ストレージの検証用APK/RVP・UI階層・スクリーンショットを削除し、NyTweetDeckの元のタスクへ戻して両チャットへAQUOS解放を連絡した。既存GoogleのversionName・lastUpdateTimeと既定アシスタントは作業前の状態を保持した。
 
 ## 2026-09-01の実測
 
