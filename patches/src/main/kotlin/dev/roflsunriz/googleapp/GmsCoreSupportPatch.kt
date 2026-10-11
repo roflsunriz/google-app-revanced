@@ -61,6 +61,7 @@ val gmsCoreSupportPatch = bytecodePatch(
 
     apply {
         patchCloudMessagingTokenNotification()
+        patchGmsComplianceGate()
 
         val playServicesCronetProvider = classDefs.firstOrNull {
             it.type == PLAY_SERVICES_CRONET_PROVIDER
