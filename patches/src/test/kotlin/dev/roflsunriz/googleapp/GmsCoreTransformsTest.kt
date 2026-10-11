@@ -83,6 +83,66 @@ class GmsCoreTransformsTest {
     }
 
     @Test
+    fun `外部検索とアシスタントの公開Intent契約をクローンでも保つ`() {
+        val document = xml(
+            """
+            <manifest xmlns:android="$ANDROID_NAMESPACE" package="$ORIGINAL_PACKAGE">
+              <application>
+                <activity android:name="example.GoogleActivity" android:exported="false"/>
+                <activity-alias android:name="example.Search" android:targetActivity="example.GoogleActivity"
+                    android:exported="true">
+                  <intent-filter>
+                    <action android:name="android.intent.action.WEB_SEARCH"/>
+                    <action android:name="android.search.action.GLOBAL_SEARCH"/>
+                    <action android:name="android.intent.action.ASSIST"/>
+                    <action android:name="android.intent.action.VOICE_ASSIST"/>
+                    <category android:name="android.intent.category.DEFAULT"/>
+                    <category android:name="$ORIGINAL_PACKAGE.category.SEARCH_WIDGET"/>
+                  </intent-filter>
+                  <meta-data android:name="android.app.searchable" android:resource="@xml/searchable"/>
+                </activity-alias>
+                <service android:name="example.Assistant" android:exported="true"
+                    android:permission="android.permission.BIND_VOICE_INTERACTION">
+                  <intent-filter><action android:name="android.service.voice.VoiceInteractionService"/></intent-filter>
+                  <meta-data android:name="android.voice_interaction" android:resource="@xml/assistant"/>
+                </service>
+                <receiver android:name="example.PublicReceiver">
+                  <intent-filter>
+                    <action android:name="example.PUBLIC_EVENT"/>
+                    <category android:name="$ORIGINAL_PACKAGE"/>
+                  </intent-filter>
+                  <intent-filter>
+                    <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
+                    <category android:name="$ORIGINAL_PACKAGE"/>
+                  </intent-filter>
+                </receiver>
+              </application>
+            </manifest>
+            """.trimIndent(),
+        )
+        configureGmsCoreManifest(document)
+        val alias = document.getElementsByTagName("activity-alias").item(0) as Element
+        assertEquals("true", alias.getAttribute("android:exported"))
+        assertEquals("example.GoogleActivity", alias.getAttribute("android:targetActivity"))
+        val actions = alias.getElementsByTagName("action")
+        assertEquals(
+            listOf("android.intent.action.WEB_SEARCH", "android.search.action.GLOBAL_SEARCH",
+                "android.intent.action.ASSIST", "android.intent.action.VOICE_ASSIST"),
+            (0 until actions.length).map { (actions.item(it) as Element).getAttribute("android:name") },
+        )
+        val categories = document.getElementsByTagName("category")
+        assertEquals(
+            listOf("android.intent.category.DEFAULT", "$ORIGINAL_PACKAGE.category.SEARCH_WIDGET",
+                ORIGINAL_PACKAGE, REVANCED_PACKAGE),
+            (0 until categories.length).map { (categories.item(it) as Element).getAttribute("android:name") },
+        )
+        val service = document.getElementsByTagName("service").item(0) as Element
+        assertEquals("android.permission.BIND_VOICE_INTERACTION", service.getAttribute("android:permission"))
+        val metadata = alias.getElementsByTagName("meta-data").item(0) as Element
+        assertEquals("@xml/searchable", metadata.getAttribute("android:resource"))
+    }
+
+    @Test
     fun `GmsCoreとプロセスとcontent authorityの文字列を変換する`() {
         GmsCoreState.reset()
         GmsCoreState.appAuthorities["$ORIGINAL_PACKAGE.provider"] = "$REVANCED_PACKAGE.provider"

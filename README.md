@@ -26,6 +26,25 @@ Google署名の標準アプリは別証明書で上書きできないため、�
 
 rootマウントで元パッケージを維持する場合は、Managerの高度な設定でパッチ選択を許可し、「GmsCore support」を無効にしてから適用してください。
 
+## 外部アプリから検索・アシスタントを使う
+
+標準のWeb検索、グローバル検索、アシスタント、音声アシスタントの呼び出しは、Google ReVancedが元APKの受付を引き継ぎます。検索語や追加情報も元のGoogleアプリの処理へ渡ります。
+
+1. 標準Googleアプリを無効にし、Google ReVancedを起動します。
+2. Googleアプリの「設定」→「Google ReVanced」→「標準アシスタントとして使う」を開きます。
+3. Androidの選択画面でGoogle ReVancedを選びます。既に選択済みの場合や端末が選択要求に対応しない場合は、Androidのアシスタント設定を開きます。
+4. 外部アプリの標準検索を実行します。選択画面が出る場合はGoogle ReVancedを選び、継続して使う場合は「常時」を選びます。
+
+選択をキャンセルすると既定アシスタントは変わりません。復旧時はAndroidの既定アシスタントを元に戻し、標準Googleアプリを有効にしてください。
+
+元パッケージ名`com.google.android.googlequicksearchbox`やそのComponentを明示する呼び出しは、非rootの別パッケージへ転送できません。呼び出し元が対応していれば、標準検索またはGoogle ReVancedを呼び出す設定へ変更してください。[AndroidのIntent仕様](https://developer.android.com/guide/components/intents-filters)も参照してください。
+
+## 「Playプロテクトの認定を受けていません」で起動できない場合
+
+「GmsCore support」は、Googleアプリ内のGmsComplianceによる起動制限を、その機能を使わない既存の経路へ切り替えます。以前の制限で無効化されたアプリ内コンポーネントは、Googleアプリ自身の復旧処理へ渡します。AndroidやPlayストアの端末認定、Play Protectの設定は変更しません。
+
+修正版RVPで元APKを再パッチし、同じManager署名鍵で更新してから起動してください。データを消去したりPlay Protectを無効にしたりする必要はありません。改善しない場合は、端末・Googleアプリ・GmsCoreの版、拒否画面、秘密情報を除いた起動ログをIssueへ添えてください。
+
 ## ReVanced Managerへパッチを追加する
 
 ReVanced Managerの「Patches」タブで編集ボタン、追加ボタン、「Enter URL」の順に開き、次のURLを登録します。

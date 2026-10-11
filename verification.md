@@ -8,6 +8,21 @@
 - API 37互換: 非公開framework直接参照、将来の音声対話属性
 - Android拡張: 広告URL判定、資源名の誤検出防止
 - GmsCore互換: クローンパッケージ、権限・authority、GCM受信カテゴリ、spoofメタデータ、process名変換、Cloud Messaging登録対象プロセス、Google API認証ヘッダーの保持
+- 外部呼び出し: 公開検索カテゴリ、検索・アシスタントのexported alias、検索メタデータ、VoiceInteractionServiceのシステム権限を保持し、GCMのRECEIVE/REGISTRATIONカテゴリだけを変換
+- GmsCompliance: 機能判定のBoolean分岐、range呼び出し、高位レジスタ、未知・曖昧な構造の拒否
+
+## 2026-10-11: Issue #6・#8の解析とローカル検証
+
+- 作業前のmainは`44aded1698625c73b52f8a3ea34d2e13c67e4957`、未コミット差分は0件。
+- Google 17.52.24の元APKとAQUOSに導入済みの17.54.11クローン（SHA-256: `b78d9bf2aa665472b6d6aa11bf912ecfd653b6ee2421bb58395a823f4b6dd3c7`）を解析した。非対応判定のコールバックが拒否画面を起動し、元Activityを終了するだけでなく、services/receivers/providersを無効化することを確認した。これはPixelで実際に返された判定値の実測ではない。
+- `Checking for device compliance...`と`Feature is disabled!`の間のBoolean分岐を検出し、Google既存のfeature-disabled経路へ切り替える。既存のcomponent reset処理を残し、認証結果を偽造しない。17.54.11の実DEXにも検出コードを直接実行し、対象ゲートが一意であることを確認した。
+- 17.52.24で2パッチの適用、全DEX再構築、資源リンク、整列、署名まで成功した。生成APKの実DEXでも対象ゲートが0となり、無効経路へ分岐することを確認した。
+- 17.50.19の単一APKでも同じ2パッチの適用、18 DEX生成、資源リンク、整列、署名まで成功した。17.52.24は18 DEXを生成した。
+- 公開検索カテゴリの過剰な改名を修正し、元APKの標準検索・アシスタント受付を再利用する。Androidの既定アシスタント選択を開く設定を追加し、キャンセル・未対応端末・既定設定済みの場合の経路も実装した。
+- 自動テスト、Android lint、全ビルド、Android用RVP構造検査は成功。ビルドプラグイン1.0.0-dev.11由来のGradle非推奨APIとSDK XML世代の警告は残る。公開タグではdev.11が最新であり、この作業で未公開プラグインへ変更していない。
+- OSV-Scanner 2.6.0は当初Bouncy Castle 1.84の`GHSA-9pwp-9qqc-pr26`と`GHSA-qp49-qgx5-5m26`を検出した。公式配布元とMaven Centralで1.86を確認し、関連4モジュールを更新後、lockfile 225パッケージの既知脆弱性0件を確認した。
+- SDK標準AAPT2 37.0.0では元APKの`$$` drawable名を拒否した。ReVanced CLI 6.0.0の既定AAPT2では同じ入力が再構築できたため、検証手順を更新した。
+- 実機UIはNyTweetDeckの端末利用終了後に確認する。Pixel 10aはADB接続されておらず、同端末の起動拒否に対する修正結果は未検証。AQUOSでの正常起動だけをPixelの修正確認として扱わない。
 
 ## 2026-09-01の実測
 

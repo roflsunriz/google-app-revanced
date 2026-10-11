@@ -14,6 +14,9 @@ public final class LocalizedStrings {
     public final String nativeTitle;
     public final String nativeSummary;
     public final String close;
+    public final String assistantTitle;
+    public final String assistantSummary;
+    public final String assistantUnavailable;
     public final boolean rightToLeft;
 
     private LocalizedStrings(String[] values, boolean rightToLeft) {
@@ -28,6 +31,9 @@ public final class LocalizedStrings {
         nativeTitle = values[8];
         nativeSummary = values[9];
         close = values[10];
+        assistantTitle = values[11];
+        assistantSummary = values[12];
+        assistantUnavailable = values[13];
         this.rightToLeft = rightToLeft;
     }
 
@@ -41,7 +47,9 @@ public final class LocalizedStrings {
                         "Web検索広告を非表示", "検索結果内の広告要素を削除し、空白も詰めます",
                         "セルフプロモーションを非表示", "Googleアプリ内の機能・サービス宣伝を非表示にします",
                         "ネイティブ広告枠を非表示", "広告カードと動画広告枠を完全に折り畳みます",
-                        "閉じる"
+                        "閉じる",
+                        "標準アシスタントとして使う", "Androidの選択画面でGoogle ReVancedを選びます。標準の検索・アシスタント呼び出しを受け取ります",
+                        "設定画面を開けません。Androidの設定から既定のアシスタントを選んでください"
                 }, false);
             case "zh":
                 return of(new String[]{
@@ -50,7 +58,9 @@ public final class LocalizedStrings {
                         "隐藏网页搜索广告", "移除搜索结果中的广告并收起空白",
                         "隐藏自我推广", "隐藏 Google 应用内的产品和功能推广",
                         "隐藏原生广告位", "完全收起广告卡片和视频广告位",
-                        "关闭"
+                        "关闭",
+                        "设为默认助理", "在 Android 选择界面中选择 Google ReVanced，接收标准搜索和助理请求",
+                        "无法打开设置。请在 Android 设置中选择默认助理"
                 }, false);
             case "hi":
                 return of(new String[]{
@@ -59,7 +69,9 @@ public final class LocalizedStrings {
                         "वेब खोज विज्ञापन छिपाएँ", "खोज परिणामों से विज्ञापन और उनकी खाली जगह हटाता है",
                         "स्व-प्रचार छिपाएँ", "Google ऐप के उत्पाद और सुविधा प्रचार छिपाता है",
                         "नेटिव विज्ञापन स्थान छिपाएँ", "विज्ञापन कार्ड और वीडियो स्थान पूरी तरह समेटता है",
-                        "बंद करें"
+                        "बंद करें",
+                        "डिफ़ॉल्ट सहायक के रूप में उपयोग करें", "मानक खोज और सहायक अनुरोधों के लिए Android में Google ReVanced चुनें",
+                        "सेटिंग नहीं खुल सकी। Android सेटिंग में डिफ़ॉल्ट सहायक चुनें"
                 }, false);
             case "es":
                 return of(new String[]{
@@ -68,7 +80,9 @@ public final class LocalizedStrings {
                         "Ocultar anuncios de búsqueda web", "Elimina anuncios y cierra el espacio vacío",
                         "Ocultar promociones propias", "Oculta promociones de productos y funciones de Google",
                         "Ocultar espacios publicitarios", "Contrae por completo tarjetas y espacios de vídeo",
-                        "Cerrar"
+                        "Cerrar",
+                        "Usar como asistente predeterminado", "Selecciona Google ReVanced en Android para recibir solicitudes estándar de búsqueda y asistencia",
+                        "No se pudo abrir la configuración. Elige el asistente predeterminado en los ajustes de Android"
                 }, false);
             case "fr":
                 return of(new String[]{
@@ -77,7 +91,9 @@ public final class LocalizedStrings {
                         "Masquer les annonces Web", "Supprime les annonces des résultats et referme l’espace vide",
                         "Masquer l’autopromotion", "Masque les promotions des produits et fonctions Google",
                         "Masquer les emplacements natifs", "Replie entièrement les cartes et espaces vidéo publicitaires",
-                        "Fermer"
+                        "Fermer",
+                        "Utiliser comme assistant par défaut", "Choisissez Google ReVanced dans Android pour les demandes standard de recherche et d’assistance",
+                        "Impossible d’ouvrir les paramètres. Choisissez l’assistant par défaut dans les paramètres Android"
                 }, false);
             case "ar":
                 return of(new String[]{
@@ -86,7 +102,9 @@ public final class LocalizedStrings {
                         "إخفاء إعلانات بحث الويب", "يزيل الإعلانات ويغلق المساحات الفارغة",
                         "إخفاء الترويج الذاتي", "يخفي عروض منتجات Google وميزاتها",
                         "إخفاء مواضع الإعلانات الأصلية", "يطوي بطاقات الإعلانات ومواضع الفيديو بالكامل",
-                        "إغلاق"
+                        "إغلاق",
+                        "استخدامه كمساعد افتراضي", "اختر Google ReVanced في Android لتلقي طلبات البحث والمساعد القياسية",
+                        "تعذر فتح الإعدادات. اختر المساعد الافتراضي في إعدادات Android"
                 }, true);
             case "pt":
                 return of(new String[]{
@@ -95,7 +113,9 @@ public final class LocalizedStrings {
                         "Ocultar anúncios da pesquisa Web", "Remove anúncios e elimina o espaço vazio",
                         "Ocultar autopromoções", "Oculta promoções de produtos e recursos do Google",
                         "Ocultar espaços de anúncios nativos", "Recolhe totalmente cartões e espaços de vídeo",
-                        "Fechar"
+                        "Fechar",
+                        "Usar como assistente padrão", "Selecione Google ReVanced no Android para receber solicitações padrão de pesquisa e assistência",
+                        "Não foi possível abrir as configurações. Escolha o assistente padrão nas configurações do Android"
                 }, false);
             case "bn":
                 return of(new String[]{
@@ -104,7 +124,9 @@ public final class LocalizedStrings {
                         "ওয়েব সার্চ বিজ্ঞাপন লুকান", "সার্চ ফলাফলের বিজ্ঞাপন ও ফাঁকা স্থান সরায়",
                         "নিজস্ব প্রচার লুকান", "Google অ্যাপের পণ্য ও ফিচার প্রচার লুকায়",
                         "নেটিভ বিজ্ঞাপন স্থান লুকান", "বিজ্ঞাপন কার্ড ও ভিডিও স্থান পুরোপুরি গুটিয়ে দেয়",
-                        "বন্ধ করুন"
+                        "বন্ধ করুন",
+                        "ডিফল্ট সহকারী হিসেবে ব্যবহার করুন", "সাধারণ সার্চ ও সহকারী অনুরোধের জন্য Android-এ Google ReVanced বেছে নিন",
+                        "সেটিং খোলা যায়নি। Android সেটিংয়ে ডিফল্ট সহকারী বেছে নিন"
                 }, false);
             case "ru":
                 return of(new String[]{
@@ -113,7 +135,9 @@ public final class LocalizedStrings {
                         "Скрывать рекламу в веб-поиске", "Удаляет рекламу и освобождает пустое место",
                         "Скрывать саморекламу", "Скрывает продвижение продуктов и функций Google",
                         "Скрывать нативные рекламные места", "Полностью сворачивает карточки и видеоблоки",
-                        "Закрыть"
+                        "Закрыть",
+                        "Использовать как помощника по умолчанию", "Выберите Google ReVanced в Android для стандартных запросов поиска и помощника",
+                        "Не удалось открыть настройки. Выберите помощника по умолчанию в настройках Android"
                 }, false);
             case "ur":
                 return of(new String[]{
@@ -122,7 +146,9 @@ public final class LocalizedStrings {
                         "ویب تلاش کے اشتہارات چھپائیں", "اشتہارات اور خالی جگہ کو ہٹا دیتا ہے",
                         "خود تشہیر چھپائیں", "Google ایپ کی مصنوعات اور خصوصیات کی تشہیر چھپاتا ہے",
                         "مقامی اشتہاری جگہ چھپائیں", "اشتہاری کارڈ اور ویڈیو جگہ مکمل طور پر سمیٹتا ہے",
-                        "بند کریں"
+                        "بند کریں",
+                        "بطور طے شدہ معاون استعمال کریں", "عام تلاش اور معاون کی درخواستوں کے لیے Android میں Google ReVanced منتخب کریں",
+                        "ترتیبات نہیں کھل سکیں۔ Android کی ترتیبات میں طے شدہ معاون منتخب کریں"
                 }, true);
             default:
                 return of(new String[]{
@@ -131,7 +157,9 @@ public final class LocalizedStrings {
                         "Hide web search ads", "Removes search ads and collapses the empty space",
                         "Hide self-promotions", "Hides Google product and feature promotions",
                         "Hide native ad slots", "Fully collapses ad cards and video ad slots",
-                        "Close"
+                        "Close",
+                        "Use as the default assistant", "Choose Google ReVanced in Android to receive standard search and assistant requests",
+                        "Could not open settings. Choose the default assistant in Android settings"
                 }, false);
         }
     }

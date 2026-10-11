@@ -91,10 +91,24 @@ internal fun configureGmsCoreManifest(document: Document) {
         provider.setAttribute("android:authorities", replacement)
     }
 
-    manifest.getElementsByTagName("category").elements().forEach { category ->
-        val original = category.androidAttribute("name")
-        if (original == ORIGINAL_PACKAGE || original.startsWith("$ORIGINAL_PACKAGE.")) {
-            category.setAttribute("android:name", cloneOwnedName(original))
+    // Only GCM delivery identifies its recipient by the installed package name.
+    // Search/assist categories are a public Intent contract, also used unchanged
+    // by callers and Google's bytecode; renaming them breaks external dispatch.
+    manifest.getElementsByTagName("receiver").elements().forEach { receiver ->
+        receiver.childElements().filter { it.tagName == "intent-filter" }.forEach { filter ->
+            val isGcmDelivery = filter.childElements().any {
+                it.tagName == "action" && it.androidAttribute("name") in setOf(
+                    "com.google.android.c2dm.intent.RECEIVE",
+                    "com.google.android.c2dm.intent.REGISTRATION",
+                )
+            }
+            if (!isGcmDelivery) return@forEach
+            filter.childElements().filter { it.tagName == "category" }.forEach { category ->
+                val original = category.androidAttribute("name")
+                if (original == ORIGINAL_PACKAGE || original.startsWith("$ORIGINAL_PACKAGE.")) {
+                    category.setAttribute("android:name", cloneOwnedName(original))
+                }
+            }
         }
     }
 

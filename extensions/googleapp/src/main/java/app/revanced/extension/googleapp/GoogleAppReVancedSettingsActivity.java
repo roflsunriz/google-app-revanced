@@ -1,7 +1,11 @@
 package app.revanced.extension.googleapp;
 
 import android.app.Activity;
+import android.app.role.RoleManager;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -10,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public final class GoogleAppReVancedSettingsActivity extends Activity {
     private int primaryColor;
@@ -61,12 +66,57 @@ public final class GoogleAppReVancedSettingsActivity extends Activity {
                 Settings.hideNativeAds(this),
                 value -> Settings.setHideNativeAds(this, value)
         ));
+        page.addView(assistantRow(strings));
 
         ScrollView scroll = new ScrollView(this);
         scroll.setFillViewport(true);
         scroll.addView(page);
         setTitle(strings.settingsTitle);
         setContentView(scroll);
+    }
+
+    private View assistantRow(LocalizedStrings strings) {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.VERTICAL);
+        row.setPadding(dp(8), dp(16), dp(8), dp(16));
+        row.setClickable(true);
+        row.setFocusable(true);
+        TypedValue background = new TypedValue();
+        if (getTheme().resolveAttribute(android.R.attr.selectableItemBackground, background, true)) {
+            row.setBackgroundResource(background.resourceId);
+        }
+        row.addView(text(strings.assistantTitle, 18, primaryColor));
+        TextView summary = text(strings.assistantSummary, 14, secondaryColor);
+        summary.setPadding(0, dp(4), 0, 0);
+        row.addView(summary);
+        row.setOnClickListener(view -> chooseAssistant(strings));
+        return row;
+    }
+
+    private void chooseAssistant(LocalizedStrings strings) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            RoleManager roles = getSystemService(RoleManager.class);
+            if (roles != null && roles.isRoleAvailable(RoleManager.ROLE_ASSISTANT)
+                    && !roles.isRoleHeld(RoleManager.ROLE_ASSISTANT)) {
+                try {
+                    startActivityForResult(roles.createRequestRoleIntent(RoleManager.ROLE_ASSISTANT), 1);
+                    return;
+                } catch (ActivityNotFoundException | SecurityException unavailable) {
+                    // Some manufacturers expose the selection only in Settings.
+                }
+            }
+        }
+        try {
+            startActivity(new Intent(android.provider.Settings.ACTION_VOICE_INPUT_SETTINGS));
+        } catch (ActivityNotFoundException | SecurityException unavailable) {
+            try {
+                startActivity(new Intent(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                        ? android.provider.Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS
+                        : android.provider.Settings.ACTION_SETTINGS));
+            } catch (ActivityNotFoundException | SecurityException alsoUnavailable) {
+                Toast.makeText(this, strings.assistantUnavailable, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     private View switchRow(String title, String summary, boolean checked, ChangeListener listener) {

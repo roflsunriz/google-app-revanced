@@ -27,11 +27,24 @@
 
 8. ReVanced CLIで複数世代の単一APKへRVPを適用し、資源リンク、DEX生成、整列、署名まで確認します。
 9. パッチ後APKを再展開し、広告権限・広告配信URL・広告枠寸法・拡張DEXを確認します。
-10. 非root実機へ別パッケージとしてインストールし、標準Googleアプリを一時無効化してから、ReVanced GmsCoreのCloud Messagingアプリ一覧へクローン版が自動登録されること、アカウント、Discover、検索、設定統合、スイッチ保存、広告枠が消えて空間が詰まることを目視確認します。
+10. 利用者のインストール承認を得て非root実機へ別パッケージとして導入し、標準Googleアプリを一時無効化してから、ReVanced GmsCoreのCloud Messagingアプリ一覧へクローン版が自動登録されること、アカウント、Discover、検索、設定統合、スイッチ保存、広告枠が消えて空間が詰まることを目視確認します。更新時は既存のManager署名鍵を使い、データを保持します。
 11. 標準Googleアプリを再有効化し、ReVanced版を削除して復旧できることも確認します。
 12. ReVanced Managerへ`patches.json`をURL登録し、「高度な設定」で別プロセス実行と700MiB以上のメモリ上限を設定してから、APK選択、パッチ完了、インストール直前まで確認します。通常プロセスでは640MiB未満を検出して早期停止し、数時間のDEX書き込み待ちにならないことも確認します。
 13. `git diff --check`、Git状態、秘密情報、生成物混入を確認してコミット・プッシュ・タグ作成します。
 14. リリースのRVPと`patches.json`を取得し、ローカル生成物と同じ構造であることを再確認します。
+
+## 外部呼び出しと起動制限の回帰確認
+
+- アプリ内の「Google ReVanced」から既定アシスタントの選択画面を開き、キャンセル時に既定値が変わらないこと、Google ReVanced選択後に標準アシスタント呼び出しが届くことを確認します。
+- 外部の`WEB_SEARCH`へ検索語を渡し、Google ReVancedに同じ検索語が表示されることを確認します。`GLOBAL_SEARCH`、`ASSIST`、`VOICE_ASSIST`と、元の`SEARCH_WIDGET`カテゴリを付けた呼び出しも確認します。パッケージを明示する呼び出しは対象外です。
+- GmsComplianceの起動拒否が再現する端末では、同じ署名の更新後に起動、検索、Discover、Cloud Messagingを確認します。`Feature is disabled!`経路に進み、拒否画面への転送とコンポーネント無効化が再発しないことを確認します。API認証やPlay Protectの設定を変更して回避しません。
+- 複数チャットで実機を共有する場合は、UI操作・設定変更・インストール前に使用順を合意し、検証終了後に解放を連絡します。
+
+## 依存監査と資源再構築
+
+Gradle依存を更新した際は、対象モジュールの`dependencies --update-locks '<group>:*'`で未実行構成も解決し、lockfileの差分とOSV監査を確認します。`settings-gradle.lockfile`を監査ツールが識別できない場合は、内容を変えずに一時フォルダの`gradle.lockfile`へコピーして入力します。
+
+Google APKは`$$`で始まるdrawable名を含みます。SDK標準AAPT2が`invalid entry name`で失敗する場合は、ReVanced CLI既定のAAPT2を使ってください。資源の削除や手動改名で失敗を隠さないでください。
 
 ## API 37以降のAPK
 
