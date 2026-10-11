@@ -19,6 +19,16 @@
 - 現在の共通Dependabot workflow（固定SHA `8bcb79de73249f04e83d0a6071d30ac025710a17`）はmajor更新も対象にし、再試行失敗後は許可されたlockfileの修復を試みる。READMEと更新手順に残っていた旧説明を修正した。下記2026-09-23の記録は当時の運用である。
 - Pixel 10aの再現確認と修正版インストール後の動作は未検証のまま、READMEと公開本文へ明記した。
 
+## 2026-10-11: v0.2.4の公開検証
+
+- mainの`dbbd30b77142349c8f9df1aba46cb1d3b471d5b0`に対する[CI](https://github.com/roflsunriz/google-app-revanced/actions/runs/38130706553)成功後、同じコミットへ`v0.2.4`タグを作成・pushした。[Release workflow](https://github.com/roflsunriz/google-app-revanced/actions/runs/38130805794)も成功し、[v0.2.4](https://github.com/roflsunriz/google-app-revanced/releases/tag/v0.2.4)は2026-10-11 19:08 JSTに最新版として公開された。
+- 公開RVPとJSONを再取得し、GitHub assetのSHA-256と一致することを確認した。RVPは`17c468eacec63ce3ee17b3975bbb31bd8cbe109b47777411761fdb6dad5ef32e`、JSONは`71cf8cbb87ddd23c1eba3346a928f44fdaf9c4c60f68098f82299e6df7d7e767`。
+- 公開RVPの35エントリがローカル生成物の構造と一致し、Android用`classes.dex`、`extensions/googleapp.rve`、manifestのVersion 0.2.4を確認した。公開本文はCHANGELOGの0.2.4節から抽出した内容と一致した。
+- `gh attestation verify`で両配布物のSLSAビルド証明を検証した。署名workflowを本リポジトリの`release.yml`、source refを`refs/tags/v0.2.4`、source digestを上記リリースコミットへ限定して成功した。
+- READMEの`releases/latest/download/patches.json`と、その`download_url`が指すRVPを認証なしで取得し、JSONの版0.2.4と両配布物のハッシュ一致を確認した。
+- 公開RVPそのものを17.52.24の元APKへ適用し、2パッチ、19 DEX生成、資源再構築、整列、v3署名まで成功した。署名検証とAPKメタデータで`app.revanced.android.googleapp`、17.52.24、表示名Google ReVancedを確認した。
+- ChMateチャットから約2分の利用枠を借り、AQUOSのManager 2.6.0で既存Googleソースだけを更新した。登録URLを変えず、ソース一覧にGoogle App ReVanced Patches `v0.2.4・2パッチ`がエラーなく表示されることをUI階層とスクリーンショットで確認した。ChMateの同じResListActivity・同じタスクへ戻し、検証用XML/PNGを端末から削除して利用枠を返した。インストール、他ソース、既定アシスタントは変更していない。
+
 ## 2026-10-11: Issue #6・#8の解析とローカル検証
 
 - 作業前のmainは`44aded1698625c73b52f8a3ea34d2e13c67e4957`、未コミット差分は0件。
