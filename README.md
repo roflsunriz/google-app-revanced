@@ -81,13 +81,7 @@ Google アプリの「設定」一覧末尾に「Google ReVanced」が追加さ�
 
 ## 開発者向け
 
-前提はJDK 21以降とAndroid SDKです。GitHub PackagesからReVanced Gradleプラグインを解決するため、`read:packages`を持つトークンをGradleプロパティへ渡します。
-
-```powershell
-./gradlew.bat test :patches:buildAndroid
-```
-
-生成された `patches/build/libs/patches-*.rvp` にはAndroid用 `classes.dex` と `extensions/googleapp.rve` が含まれます。更新手順は [how-to-update.md](how-to-update.md)、検証内容は [verification.md](verification.md) を参照してください。
+詳細は [findings.md](findings.md#readme-1) に移しました。
 
 ## ライセンス
 
@@ -95,4 +89,4 @@ Google アプリの「設定」一覧末尾に「Google ReVanced」が追加さ�
 
 ## 依存更新の自動処理
 
-Dependabot は対象の依存関係を毎週確認します。patch／minor／major 更新は、現在のPRのコミットと全チェックの成功を確認した後に自動でsquash mergeされます。CIの失敗ジョブは1回だけ再実行し、再失敗時は対象を限定したGradle lockfileの再生成と再検証を試みます。修復できないPRは手動で対応します。
+詳細は [findings.md](findings.md#readme-2) に移しました。

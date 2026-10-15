@@ -17,16 +17,8 @@ Get-Content -Raw -LiteralPath .\COMMON-AGENTS.md
 - Google(ID:com.google.android.googlequicksearchbox)アプリ用のReVanced patchを作る
 - 広告を除去する
 
-## 外部検索・アシスタントとGmsCore
+## プロジェクト固有の知見
 
-- 標準の検索・アシスタントIntentは元APKのexported activity-aliasとVoiceInteractionServiceを再利用する。検索語・extrasの転送用に別Activityを設けない。
-- GmsCore用カテゴリの変更はGCMのRECEIVE/REGISTRATIONを受けるreceiverのintent-filterだけに限定する。公開検索カテゴリ（元パッケージ名のSEARCH_WIDGETなど）は外部呼び出し元とGoogleのDEXが使う契約なので改名しない。根拠は`GmsCoreTransforms.kt`と`GmsCoreTransformsTest.kt`。
-- 非rootクローンは元パッケージを明示したIntentを横取りできない。Issue #8の対象はユーザー確認により標準の検索・アシスタント呼び出し。Android側の既定アシスタント選択を必要とする。
-- 17.52.24とAQUOSから採取した17.54.11のDEXでは、GmsComplianceの非対応判定が`UncertifiedDeviceActivity`への転送だけでなく、services/receivers/providersの無効化も行う。拒否画面だけを隠しても復旧しない。GmsCore support内の`GmsCompliancePatch.kt`は2つのログ文字列とBoolean分岐を検出し、既存のfeature-disabled経路へ切り替えてcomponent resetを残す。Pixelでの修正確認は別途必要。
-- Google APKの`$$` drawable名はSDK標準AAPT2 37.0.0で再構築に失敗する。CLI検証ではReVanced CLI既定のAAPT2を使い、`--custom-aapt2-binary`でSDK標準版へ置き換えない。17.50.19/17.52.24で確認（2026-10-11）。
-- Gradle wrapper更新では、旧Gradleによる`wrapper --gradle-version`実行後、新しいGradleでも`wrapper`を再実行してJARも更新する。配布ZIPの`distributionSha256Sum`とwrapper JARの公式SHA-256を両方確認する。Gradle 9.8.1で確認（2026-10-11）。
-
-## GitHub受付テンプレートの保守
-
-- `.github/ISSUE_TEMPLATE/config.yml` はIssue作成画面の受付設定専用とし、設定・互換性の相談フォームは `configuration.yml` に置く。予約名へフォームの `name` や `body` を配置しない。
-- 受付フォームを変更するときは、既存の `id`、選択肢、必須条件、固有の質問と案内を保全する。ワークフローが解析する見出し（`対象領域`、`OS` など）がある場合は、対応する解析処理との整合を確認する。根拠は `.github/ISSUE_TEMPLATE/` と `.github/workflows/`。
+- [COMMON-AGENTS.md](COMMON-AGENTS.md) を最優先とし、作業前に [findings.md](findings.md) も先頭から末尾まで全文読む。出力省略や読取り失敗を読了扱いしない。
+- 実現手段・環境差・明示的な例外・再利用する調査知見はfindings.mdへ随時記録する。変更履歴はCHANGELOG.md、実施した検証と未検証事項はverification.mdに残す。
+- ユーザーの禁止・承認条件、秘密情報と既存データの保護、未コミット変更を戻さない義務を弱めない。

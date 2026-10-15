@@ -6,3 +6,6 @@ build/
 dist/
 output/
 local.properties
+
+# エージェントの一時作業メモ
+subagents/

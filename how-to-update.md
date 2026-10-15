@@ -66,8 +66,4 @@ Google APKは`$$`で始まるdrawable名を含みます。SDK標準AAPT2が`inva
 
 ## Dependabot PR の更新
 
-前提は `.github/dependabot.yml` と PR 用 CI（CI）です。更新PRのhead SHAと`gh pr checks <PR番号>`の結果を確認してください。patch／minor／majorは現在のコミットの全チェック成功後に自動取り込みされます。初回CI失敗はfailed jobsだけを1回再実行し、再失敗時は許可された3つのGradle lockfileを再生成して再検証します。修復できないPRは手動で対応します。
-
-設定を変えたときは `actionlint .github/workflows/dependabot-automation.yml` と実際の PR の Actions 結果を確認します。問題があれば呼び出し先の共通 workflow SHA を直前の検証済み値へ戻すコミットを push します。取り込まれた依存更新に問題があれば通常の revert コミットで復旧します。
-
-CI 完了より Dependabot の分類が遅れる場合は、`callback_workflow_file` が指す呼び出し側 workflow を `workflow_dispatch` し、同じ PR 番号・head SHA・全チェックを再確認する。呼び出し側のファイル名を変える際はこの入力も一緒に更新する。
+詳細は [findings.md](findings.md#update-1) に移しました。
