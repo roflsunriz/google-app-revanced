@@ -1,5 +1,7 @@
 # 調査知見
 
+- Manager登録用のraw URLは既定ブランチ直下の `patches.json` を読む。release workflowの最後で、最新リリースのJSONだけを同ブランチへ同期する。旧リリース再実行は更新対象外で、JSONの版と現在のblob SHAを検証するため、URLだけを変更してJSON配置・同期を省略しない。
+
 - 標準検索・アシスタントは元APKのexported aliasとVoiceInteractionServiceを再利用する。非rootクローンは元package明示Intentを横取りできず、Android側の既定アシスタント選択が必要。
 - GmsCore向けカテゴリ変更はGCMのRECEIVE/REGISTRATION receiverだけに限定する。公開検索カテゴリは外部呼出し元と元DEXの契約なので改名しない。
 - GmsComplianceの非対応経路は拒否画面だけでなくservices/receivers/providersも無効化する。画面を隠すだけでは直らず、既存のfeature-disabled経路へ分岐させcomponent resetを残す。AQUOSでは確認済みだがPixelは未確認。
